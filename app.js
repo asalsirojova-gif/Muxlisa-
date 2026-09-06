@@ -1,677 +1,92 @@
-'use strict';
-/* =========================================================
-   BOLAJONLAR — app.js
-   Barcha ma'lumotlar, navigatsiya, ovoz, quiz va reyting logikasi.
-   Tashqi kutubxona yo'q — faqat vanilla JS.
-   ========================================================= */
-
-/* ---------------- MA'LUMOTLAR ---------------- */
-
-const LETTERS = [
-  ["A","Anor"], ["B","Bola"], ["D","Daraxt"], ["E","Echki"], ["F","Fil"],
-  ["G","Gul"], ["H","Hilol"], ["I","It"], ["J","Jajji"], ["K","Kitob"],
-  ["L","Limon"], ["M","Mushuk"], ["N","Non"], ["O","Olma"], ["P","Piyoz"],
-  ["Q","Qalam"], ["R","Rasm"], ["S","Soat"], ["T","Tuxum"], ["U","Uzum"],
-  ["V","Velosiped"], ["X","Xalta"], ["Y","Yulduz"], ["Z","Zebra"],
-  ["O‘","O‘rmon"], ["G‘","G‘oz"], ["Sh","Shar"], ["Ch","Choy"], ["Ng","Dengiz"]
-].map(([letter, word], i) => ({ id: `letter-${i}`, letter, word, pal: i % 7 }));
-
-const NUMBERS = [
-  ["1","bir"], ["2","ikki"], ["3","uch"], ["4","to‘rt"], ["5","besh"],
-  ["6","olti"], ["7","yetti"], ["8","sakkiz"], ["9","to‘qqiz"], ["10","o‘n"]
-].map(([digit, word], i) => ({ id: `num-${i}`, digit, word, value: i + 1, pal: i % 7 }));
-
-const COLORS = [
-  ["Qizil", "#E85D5D"], ["Sariq", "#F6C94B"], ["Yashil", "#5FB56A"], ["Ko‘k", "#4C86D6"],
-  ["Pushti", "#F2A0C4"], ["Binafsha", "#A97BD1"], ["To‘q sariq", "#EE8A3D"],
-  ["Havorang", "#7FD0E0"], ["Oq", "#F7F5EE"], ["Qora", "#4A4038"]
-].map(([name, hex], i) => ({ id: `color-${i}`, name, hex }));
-
-const SHAPES = [
-  ["Doira", "circle"], ["Uchburchak", "triangle"], ["Kvadrat", "square"],
-  ["To‘g‘ri to‘rtburchak", "rect"], ["Oval", "oval"], ["Yulduz", "star"]
-].map(([name, kind], i) => ({ id: `shape-${i}`, name, kind, pal: i % 7 }));
-
-const BODY_PARTS = [
-  ["Ko‘z","👁"], ["Quloq","👂"], ["Burun","👃"], ["Og‘iz","👄"],
-  ["Qo‘l","✋"], ["Oyoq","🦶"], ["Bosh","🧠"]
-].map(([name, emoji], i) => ({ id: `body-${i}`, name, emoji, pal: i % 7 }));
-
-const ANIMALS = [
-  ["Mushuk","🐱"], ["It","🐶"], ["Quyon","🐰"], ["Sher","🦁"],
-  ["Fil","🐘"], ["Panda","🐼"], ["Kapalak","🦋"], ["Baliq","🐠"]
-].map(([name, emoji], i) => ({ id: `animal-${i}`, name, emoji, pal: i % 7 }));
-
-const FRUITS = [
-  ["Olma","🍎"], ["Nok","🍐"], ["Apelsin","🍊"], ["Banan","🍌"],
-  ["Uzum","🍇"], ["Tarvuz","🍉"], ["Qulupnay","🍓"], ["Kivi","🥝"]
-].map(([name, emoji], i) => ({ id: `fruit-${i}`, name, emoji, pal: i % 7 }));
-
-const NATURE = [
-  ["Quyosh","☀️"], ["Oy","🌙"], ["Bulut","☁️"], ["Yomg‘ir","🌧"],
-  ["Daraxt","🌳"], ["Gul","🌸"], ["Tog‘","⛰"], ["Dengiz","🌊"]
-].map(([name, emoji], i) => ({ id: `nature-${i}`, name, emoji, pal: i % 7 }));
-
-const TRANSPORT = [
-  ["Mashina","🚗"], ["Avtobus","🚌"], ["Poyezd","🚆"],
-  ["Samolyot","✈️"], ["Kema","🚢"], ["Velosiped","🚲"]
-].map(([name, emoji], i) => ({ id: `transport-${i}`, name, emoji, pal: i % 7 }));
-
-const CLOCKS = [
-  ["1:00", 1, 0], ["3:00", 3, 0], ["6:00", 6, 0], ["9:00", 9, 0], ["12:00", 12, 0]
-].map(([label, h, m], i) => ({ id: `clock-${i}`, label, h, m, pal: i % 7 }));
-
-const CATEGORIES = [
-  { id: "letters",    label: "Harflar",            icon: "letters",    cls: "c1"  },
-  { id: "numbers",    label: "Sonlar",              icon: "numbers",    cls: "c2"  },
-  { id: "colors",     label: "Ranglar",             icon: "colors",     cls: "c3"  },
-  { id: "shapes",     label: "Geometrik shakllar",  icon: "shapes",     cls: "c4"  },
-  { id: "body",       label: "Tana a’zolari",       icon: "body",       cls: "c5"  },
-  { id: "time",       label: "Vaqt",                icon: "time",       cls: "c6"  },
-  { id: "animals",    label: "Hayvonlar",           icon: "animals",    cls: "c7"  },
-  { id: "fruits",     label: "Mevalar",             icon: "fruits",     cls: "c8"  },
-  { id: "nature",     label: "Tabiat",              icon: "nature",     cls: "c9"  },
-  { id: "transport",  label: "Transport",           icon: "transport",  cls: "c10" },
-  { id: "quiz",       label: "Quiz",                icon: "quiz",       cls: "c11" }
-];
-
-/* ---------------- OVOZ (SpeechSynthesis) ---------------- */
-
-function speak(text){
-  try{
-    if(!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'uz-UZ';
-    utter.rate = 0.9;
-    utter.pitch = 1.05;
-    const voices = window.speechSynthesis.getVoices();
-    const uzVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('uz'));
-    if(uzVoice) utter.voice = uzVoice;
-    window.speechSynthesis.speak(utter);
-  }catch(e){ /* ovoz mavjud bo'lmasa jim o'tkazamiz */ }
-}
-if('speechSynthesis' in window){
-  window.speechSynthesis.onvoiceschanged = () => {};
-}
-
-/* ---------------- NAVIGATSIYA ---------------- */
-
-const state = {
-  currentView: 'home',
-  history: [],
-  quiz: null
+"use strict";
+const $=s=>document.querySelector(s), main=$('#main');
+const P=['#f6b9cf','#f8d77e','#a9ded2','#a9cdf0','#d3b8f0','#f3aa82','#7fd6c9'];
+const lessons={
+ letters:{title:'Harflar',items:[['A','Anor'],['B','Bola'],['D','Daraxt'],['E','Echki'],['F','Fil'],['G','Gul'],['H','Hilol'],['I','It'],['J','Jajji'],['K','Kitob'],['L','Limon'],['M','Mushuk'],['N','Non'],['O','Olma'],['P','Piyoz'],['Q','Qalam'],['R','Rasm'],['S','Soat'],['T','Tuxum'],['U','Uzum'],['V','Velosiped'],['X','Xalta'],['Y','Yulduz'],['Z','Zebra'],['O‘','O‘rmon'],['G‘','G‘oz'],['Sh','Shar'],['Ch','Choy'],['Ng','Dengiz']]},
+ numbers:{title:'Sonlar',items:[['1','Bir'],['2','Ikki'],['3','Uch'],['4','To‘rt'],['5','Besh'],['6','Olti'],['7','Yetti'],['8','Sakkiz'],['9','To‘qqiz'],['10','O‘n']]},
+ colors:{title:'Ranglar',items:[['Qizil','#e85d5d'],['Sariq','#f6c94b'],['Yashil','#5fb56a'],['Ko‘k','#4c86d6'],['Pushti','#f2a0c4'],['Binafsha','#a97bd1'],['To‘q sariq','#ee8a3d'],['Havorang','#7fd0e0'],['Oq','#fffdf8'],['Qora','#433b37']]},
+ shapes:{title:'Geometrik shakllar',items:[['Doira','circle'],['Uchburchak','triangle'],['Kvadrat','square'],['To‘g‘ri to‘rtburchak','rect'],['Oval','oval'],['Yulduz','star']]},
+ body:{title:'Tana a’zolari',items:[['Ko‘z','eye'],['Quloq','ear'],['Burun','nose'],['Og‘iz','mouth'],['Qo‘l','hand'],['Oyoq','foot'],['Bosh','head']]},
+ animals:{title:'Hayvonlar',items:[['Mushuk','cat'],['It','dog'],['Quyon','rabbit'],['Sher','lion'],['Fil','elephant'],['Panda','panda'],['Kapalak','butterfly'],['Baliq','fish']]},
+ fruits:{title:'Mevalar',items:[['Olma','apple'],['Nok','pear'],['Apelsin','orange'],['Banan','banana'],['Uzum','grapes'],['Tarvuz','watermelon'],['Qulupnay','strawberry'],['Kivi','kiwi']]},
+ nature:{title:'Tabiat',items:[['Quyosh','sun'],['Oy','moon'],['Bulut','cloud'],['Yomg‘ir','rain'],['Daraxt','tree'],['Gul','flower'],['Tog‘','mountain'],['Dengiz','sea']]},
+ transport:{title:'Transport',items:[['Mashina','car'],['Avtobus','bus'],['Poyezd','train'],['Samolyot','plane'],['Kema','ship'],['Velosiped','bike']]}
 };
-
-function $(sel, root=document){ return root.querySelector(sel); }
-function $all(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-function el(tag, attrs={}, ...children){
-  const node = document.createElement(tag);
-  for(const [k,v] of Object.entries(attrs)){
-    if(k === 'class') node.className = v;
-    else if(k === 'html') node.innerHTML = v;
-    else if(k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
-    else node.setAttribute(k, v);
-  }
-  children.flat().forEach(c => {
-    if(c === null || c === undefined) return;
-    node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-  });
-  return node;
+const cats=[['letters','Harflar','letters.svg'],['numbers','Sonlar','numbers.svg'],['colors','Ranglar','colors.svg'],['shapes','Shakllar','shapes.svg'],['body','Tana a’zolari','body.svg'],['time','Vaqt','time.svg'],['animals','Hayvonlar','animals.svg'],['fruits','Mevalar','fruits.svg'],['nature','Tabiat','nature.svg'],['transport','Transport','transport.svg'],['quiz','Quiz','quiz.svg']];
+let history=[],current='home',quizState=null,deferredPrompt=null;
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function speak(t){if(!('speechSynthesis'in window))return toast('Bu brauzerda ovoz funksiyasi mavjud emas');speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='uz-UZ';u.rate=.88;let v=speechSynthesis.getVoices().find(x=>x.lang.toLowerCase().startsWith('uz'));if(v)u.voice=v;speechSynthesis.speak(u)}
+function toast(t){let e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
+function setHead(title='Bolajonlar',sub='O‘ynab o‘rganamiz!'){ $('#title').textContent=title;$('#subtitle').textContent=sub;$('#backBtn').classList.toggle('hidden',current==='home') }
+function go(view,push=true){if(push&&current!==view)history.push(current);current=view;setHead(view==='home'?'Bolajonlar':(lessons[view]?.title||({time:'Vaqt',quiz:'Quiz',ranking:'Reyting'}[view]||'Bolajonlar')));render();markNav();window.scrollTo(0,0)}
+function back(){let v=history.pop()||'home';go(v,false)}
+function yarnText(text,color){return `<span class="glyph" style="color:${color}">${esc(text)}</span>`}
+function art(kind,color='#f6b9cf'){
+ const stroke='#fff7ed',dark='#5a4032';
+ const common=`<defs><filter id="s"><feDropShadow dx="0" dy="5" stdDeviation="3" flood-color="#5a4032" flood-opacity=".2"/></filter><pattern id="y" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M1 4h7" stroke="#fff" stroke-width="2" stroke-opacity=".55"/><path d="M5 1v7" stroke="#5a4032" stroke-opacity=".1"/></pattern></defs>`;
+ let p='';
+ const fill=`fill="${color}" stroke="${stroke}" stroke-width="5"`;
+ if(kind==='circle')p=`<circle cx="64" cy="64" r="42" ${fill}/>`;
+ else if(kind==='triangle')p=`<path d="M64 18 110 104H18Z" ${fill}/>`;
+ else if(kind==='square')p=`<rect x="25" y="25" width="78" height="78" rx="15" ${fill}/>`;
+ else if(kind==='rect')p=`<rect x="15" y="37" width="98" height="54" rx="14" ${fill}/>`;
+ else if(kind==='oval')p=`<ellipse cx="64" cy="64" rx="48" ry="34" ${fill}/>`;
+ else if(kind==='star')p=`<path d="m64 16 12 32 34 1-27 21 9 34-28-19-28 19 9-34L18 49l34-1Z" ${fill}/>`;
+ else if(kind==='eye')p=`<path d="M15 64S34 33 64 33s49 31 49 31-19 31-49 31S15 64 15 64Z" ${fill}/><circle cx="64" cy="64" r="14" fill="#7fd6c9" stroke="${stroke}" stroke-width="5"/>`;
+ else if(kind==='ear')p=`<path d="M40 104c-20-22-18-69 14-78 27-8 47 13 40 39-6 20-22 21-26 38-2 12-13 14-28 1Z" ${fill}/><path d="M48 86c-8-14-2-38 15-42 12-3 20 8 15 19-4 10-15 10-18 24" fill="none" stroke="#d5703b" stroke-width="7" stroke-linecap="round"/>`;
+ else if(kind==='nose')p=`<path d="M64 20 98 96H30Z" ${fill}/><path d="M52 96h24" stroke="#d5703b" stroke-width="7" stroke-linecap="round"/>`;
+ else if(kind==='mouth')p=`<path d="M25 64c17-17 61-17 78 0-17 25-61 25-78 0Z" ${fill}/><path d="M36 64h56" stroke="#d5703b" stroke-width="5"/>`;
+ else if(kind==='hand')p=`<path d="M40 104c-10-7-15-18-12-29l6-35c1-7 10-7 11 0l2 22V28c0-7 11-7 11 0v30V23c0-7 11-7 11 0v35V28c0-7 11-7 11 0v37l5-20c2-7 12-5 10 2l-8 36c-4 18-19 26-37 21Z" ${fill}/>`;
+ else if(kind==='foot')p=`<path d="M38 25c11 0 15 8 15 19v31c12 3 27 7 38 17 13 12 3 29-16 25L39 105c-17-5-23-18-18-31l9-25V40c0-9 3-15 8-15Z" ${fill}/>`;
+ else if(kind==='head')p=`<circle cx="64" cy="64" r="42" ${fill}/><path d="M36 39c9-13 47-19 59 2" fill="none" stroke="#d5703b" stroke-width="7" stroke-linecap="round"/>`;
+ else if(kind==='cat')p=`<path d="M25 44 42 22l12 14h20l12-14 17 22v56H25Z" ${fill}/><path d="M37 94h54" stroke="#d5703b" stroke-width="7" stroke-linecap="round"/>`;
+ else if(kind==='dog')p=`<path d="M36 38 19 55l10 34 20-8v22h49V46l-18-10-14 7Z" ${fill}/><path d="M29 58 17 76M99 55l15 20" stroke="#d5703b" stroke-width="10" stroke-linecap="round"/>`;
+ else if(kind==='rabbit')p=`<path d="M35 55V20c0-13 17-13 17 0v29M76 49V20c0-13 17-13 17 0v35c14 12 15 43-6 52H42c-22-9-21-40-7-52Z" ${fill}/>`;
+ else if(kind==='lion')p=`<circle cx="64" cy="64" r="46" fill="#f3aa82" stroke="${stroke}" stroke-width="5"/><circle cx="64" cy="64" r="29" fill="#f8d77e" stroke="${stroke}" stroke-width="5"/>`;
+ else if(kind==='elephant')p=`<path d="M31 100V48c0-17 16-28 34-28s32 11 32 28v28H78v28H62V76H46v24Z" ${fill}/><path d="M70 52v38c0 13-7 18-16 18" fill="none" stroke="#5b93ca" stroke-width="10" stroke-linecap="round"/>`;
+ else if(kind==='panda')p=`<circle cx="64" cy="64" r="42" fill="#fffdf8" stroke="${stroke}" stroke-width="5"/><circle cx="36" cy="35" r="15" fill="#433b37"/><circle cx="92" cy="35" r="15" fill="#433b37"/><path d="M42 93h44" stroke="#433b37" stroke-width="12" stroke-linecap="round"/>`;
+ else if(kind==='butterfly')p=`<path d="M64 64C40 17 8 28 20 63c-21 17 6 45 42 12ZM64 64c24-47 56-36 44-1 21 17-6 45-42 12Z" ${fill}/><path d="M64 42v45" stroke="#8b63c5" stroke-width="8" stroke-linecap="round"/>`;
+ else if(kind==='fish')p=`<path d="M22 64c18-24 52-31 75-8l18-18v52L97 72c-23 23-57 16-75-8Z" ${fill}/>`;
+ else if(kind==='apple')p=`<path d="M64 39c-27 0-39 20-31 47 5 18 17 28 31 28s26-10 31-28c8-27-4-47-31-47Z" ${fill}/><path d="M64 41c0-12 10-21 23-21-4 13-12 20-23 21Z" fill="#5fb56a" stroke="${stroke}" stroke-width="4"/>`;
+ else if(kind==='pear')p=`<path d="M64 19c13 0 22 11 18 26 22 13 23 51 1 65-11 7-27 7-38 0-22-14-21-52 1-65-4-15 5-26 18-26Z" ${fill}/>`;
+ else if(kind==='orange')p=`<circle cx="64" cy="68" r="39" ${fill}/><path d="M65 31c7-14 19-16 28-10-9 11-18 12-28 10Z" fill="#5fb56a" stroke="${stroke}" stroke-width="4"/>`;
+ else if(kind==='banana')p=`<path d="M25 33c11 40 43 61 76 48-7 18-23 29-45 29-27 0-39-29-31-77Z" ${fill}/>`;
+ else if(kind==='grapes')p=`<g ${fill}>${[[64,30],[47,48],[81,48],[34,67],[64,67],[94,67],[47,88],[81,88],[64,106]].map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="16"/>`).join('')}</g>`;
+ else if(kind==='watermelon')p=`<path d="M20 93 64 22l44 71Z" fill="#5fb56a" stroke="${stroke}" stroke-width="5"/><path d="M29 88 64 33l35 55Z" fill="#e85d5d"/>`;
+ else if(kind==='strawberry')p=`<path d="M64 32c30 0 39 22 29 49L70 111H58L35 81c-10-27-1-49 29-49Z" ${fill}/><path d="M64 32 48 18M64 32 80 18" stroke="#5fb56a" stroke-width="7" stroke-linecap="round"/>`;
+ else if(kind==='kiwi')p=`<circle cx="64" cy="64" r="42" fill="#8a6b47" stroke="${stroke}" stroke-width="5"/><circle cx="64" cy="64" r="31" fill="#b9d36a"/><circle cx="64" cy="64" r="7" fill="#fffdf8"/>`;
+ else if(kind==='sun')p=`<circle cx="64" cy="64" r="25" ${fill}/><g stroke="#f6c94b" stroke-width="10" stroke-linecap="round">${Array.from({length:8},(_,i)=>`<path d="M64 10v16" transform="rotate(${i*45} 64 64)"/>`).join('')}</g>`;
+ else if(kind==='moon')p=`<path d="M84 21c-31 4-43 38-21 61 15 15 36 16 51 5-9 20-32 29-53 20C29 94 17 57 35 33 48 16 68 13 84 21Z" ${fill}/>`;
+ else if(kind==='cloud')p=`<path d="M24 86c-14-20 5-42 25-32 8-28 46-28 54 1 23-4 30 28 9 35H34c-4 0-7-1-10-4Z" ${fill}/>`;
+ else if(kind==='rain')p=`<path d="M24 68c-14-20 5-42 25-32 8-28 46-28 54 1 23-4 30 28 9 35H34c-4 0-7-1-10-4Z" ${fill}/><path d="M45 95v16M64 95v16M83 95v16" stroke="#5b93ca" stroke-width="8" stroke-linecap="round"/>`;
+ else if(kind==='tree')p=`<path d="M58 69h12v42H58Z" fill="#d5703b"/><path d="M64 18c-28 24-39 44-31 62 6 14 56 14 62 0 8-18-3-38-31-62Z" ${fill}/>`;
+ else if(kind==='flower')p=`<g fill="${color}" stroke="${stroke}" stroke-width="4">${[0,72,144,216,288].map(r=>`<ellipse cx="64" cy="35" rx="14" ry="27" transform="rotate(${r} 64 64)"/>`).join('')}</g><circle cx="64" cy="64" r="13" fill="#f8d77e"/>`;
+ else if(kind==='mountain')p=`<path d="m18 103 35-62 22 33 12-18 23 47Z" ${fill}/><path d="m53 41 11 17 11-17" fill="none" stroke="#fffdf8" stroke-width="8"/>`;
+ else if(kind==='sea')p=`<path d="M15 77c13-18 26 18 39 0 13-18 26 18 39 0 8-11 15-6 20 0v27H15Z" ${fill}/>`;
+ else if(kind==='car')p=`<path d="M20 79h88l-9-30H38Z" ${fill}/><path d="M43 49 53 33h22l10 16" fill="#a9cdf0" stroke="${stroke}" stroke-width="5"/><circle cx="42" cy="82" r="9" fill="#543f35"/><circle cx="86" cy="82" r="9" fill="#543f35"/>`;
+ else if(kind==='bus')p=`<rect x="24" y="30" width="80" height="68" rx="16" ${fill}/><path d="M37 43h54M37 57h54" stroke="#fffdf8" stroke-width="7"/><circle cx="42" cy="99" r="9" fill="#543f35"/><circle cx="86" cy="99" r="9" fill="#543f35"/>`;
+ else if(kind==='train')p=`<rect x="29" y="22" width="70" height="74" rx="20" ${fill}/><path d="M42 42h44v24H42Z" fill="#a9cdf0"/><path d="M42 110 54 96M86 110 74 96" stroke="#543f35" stroke-width="8"/>`;
+ else if(kind==='plane')p=`<path d="M64 15 77 58l33 17-4 12-35-10-5 35-8 0-5-35-35 10-4-12 33-17Z" ${fill}/>`;
+ else if(kind==='ship')p=`<path d="M20 78h88L92 108H36Z" ${fill}/><path d="M44 78V36h32v42" fill="#a9cdf0" stroke="${stroke}" stroke-width="5"/><path d="M18 112c12-8 24 8 36 0 12-8 24 8 36 0 12-8 20 0 20 0" fill="none" stroke="#5b93ca" stroke-width="7"/>`;
+ else if(kind==='bike')p=`<circle cx="35" cy="88" r="22" fill="none" stroke="${color}" stroke-width="9"/><circle cx="93" cy="88" r="22" fill="none" stroke="${color}" stroke-width="9"/><path d="M35 88 54 49h18l21 39M54 49l-12 0M72 49l12-15M54 49l18 39" fill="none" stroke="#543f35" stroke-width="7" stroke-linecap="round"/>`;
+ else p=`<circle cx="64" cy="64" r="40" ${fill}/>`;
+ return `<svg viewBox="0 0 128 128" aria-hidden="true"><g filter="url(#s)">${common}${p}<path d="M18 18h92v92H18z" fill="url(#y)" opacity=".32" clip-path="inset(0 round 50%)"/></g></svg>`;
 }
-
-function showView(viewId, opts={}){
-  $all('.view').forEach(v => v.classList.remove('active'));
-  const target = document.getElementById(`view-${viewId}`);
-  if(target) target.classList.add('active');
-  state.currentView = viewId;
-  document.getElementById('main-scroll').scrollTop = 0;
-  updateBackButton();
-  updateBottomNav();
-  if(!opts.silentHistory){
-    state.history.push(viewId);
-  }
-}
-
-function goBack(){
-  state.history.pop();
-  const prev = state.history.pop() || 'home';
-  navigateTo(prev, true);
-}
-
-function updateBackButton(){
-  const btn = document.getElementById('back-btn');
-  btn.style.visibility = (state.currentView === 'home') ? 'hidden' : 'visible';
-}
-
-function updateBottomNav(){
-  const map = { home: 'nav-home', lessons: 'nav-lessons', quiz: 'nav-quiz', ranking: 'nav-ranking' };
-  $all('.nav-btn').forEach(b => b.classList.remove('active'));
-  let key = null;
-  if(state.currentView === 'home') key = 'home';
-  else if(state.currentView === 'quiz-run' || state.currentView === 'quiz-result') key = 'quiz';
-  else if(state.currentView === 'ranking') key = 'ranking';
-  else key = 'lessons';
-  const activeBtn = document.getElementById(map[key]);
-  if(activeBtn) activeBtn.classList.add('active');
-}
-
-/* ---------------- SAHIFA SARLAVHASI ---------------- */
-
-function setTitle(text){
-  document.getElementById('screen-title').textContent = text;
-}
-
-/* ---------------- BOSH SAHIFA ---------------- */
-
-function renderHome(){
-  const grid = document.getElementById('home-grid');
-  grid.innerHTML = '';
-  CATEGORIES.forEach(cat => {
-    const card = el('button', { class: `cat-card ${cat.cls}`, onclick: () => openCategory(cat.id) },
-      el('img', { src: `assets/icons/${cat.icon}.svg`, alt: '', width: 56, height: 56 }),
-      el('span', { class: 'cat-label' }, cat.label)
-    );
-    grid.appendChild(card);
-  });
-}
-
-function openCategory(id){
-  if(id === 'quiz'){ startQuiz(); return; }
-  const opener = CATEGORY_OPENERS[id];
-  if(opener) opener();
-}
-
-/* ---------------- KATEGORIYA SAHIFALARI ---------------- */
-
-function paletteClass(i){ return `p${i % 7}`; }
-
-function renderTileGrid(containerId, items, opts){
-  const wrap = document.getElementById(containerId);
-  wrap.innerHTML = '';
-  const grid = el('div', { class: 'item-grid' });
-  items.forEach(item => {
-    const label = opts.tileLabel(item);
-    const sub = opts.tileSub ? opts.tileSub(item) : null;
-    const style = opts.tileStyle ? opts.tileStyle(item) : '';
-    const cls = opts.swatch ? 'yarn-tile swatch' : `yarn-tile ${paletteClass(item.pal ?? 0)}`;
-    const tile = el('button', { class: cls, style, onclick: () => opts.onOpen(item) },
-      el('span', {}, label),
-      sub ? el('small', {}, sub) : null
-    );
-    grid.appendChild(tile);
-  });
-  wrap.appendChild(grid);
-}
-
-function renderDetail(containerId, opts){
-  const wrap = document.getElementById(containerId);
-  wrap.innerHTML = '';
-  const panel = el('div', { class: 'detail-panel' },
-    opts.clockSvg ? el('div', { class: 'clock-face-wrap', html: opts.clockSvg }) : null,
-    el('div', { class: 'big-glyph' }, opts.glyph),
-    el('div', { class: 'big-word' }, opts.word),
-    opts.sub ? el('div', { class: 'big-sub' }, opts.sub) : null,
-    el('button', { class: 'speak-btn', onclick: () => speak(opts.speech) }, '🔊 Tinglash')
-  );
-  wrap.appendChild(panel);
-}
-
-/* ---- Harflar ---- */
-function openLettersList(){
-  setTitle('Harflar');
-  renderTileGrid('letters-grid', LETTERS, {
-    tileLabel: l => l.letter,
-    onOpen: l => openLetterDetail(l)
-  });
-  navigateTo('cat-letters');
-}
-function openLetterDetail(l){
-  setTitle(l.letter);
-  renderDetail('letter-detail', {
-    glyph: l.letter,
-    word: `${l.letter} — ${l.word}`,
-    speech: `${l.letter}. ${l.word}`
-  });
-  navigateTo('letter-detail-view');
-  speak(`${l.letter}. ${l.word}`);
-}
-
-/* ---- Sonlar ---- */
-function openNumbersList(){
-  setTitle('Sonlar');
-  renderTileGrid('numbers-grid', NUMBERS, {
-    tileLabel: n => n.digit,
-    onOpen: n => openNumberDetail(n)
-  });
-  navigateTo('cat-numbers');
-}
-function openNumberDetail(n){
-  setTitle(n.digit);
-  renderDetail('number-detail', {
-    glyph: n.digit,
-    word: n.word[0].toUpperCase() + n.word.slice(1),
-    speech: n.word
-  });
-  navigateTo('number-detail-view');
-  speak(n.word);
-}
-
-/* ---- Ranglar ---- */
-function openColorsList(){
-  setTitle('Ranglar');
-  const wrap = document.getElementById('colors-grid');
-  wrap.innerHTML = '';
-  const grid = el('div', { class: 'item-grid' });
-  COLORS.forEach(c => {
-    const tile = el('button', {
-      class: 'yarn-tile swatch',
-      style: `background-color:${c.hex};`,
-      onclick: () => openColorDetail(c)
-    }, el('small', { style: c.hex === '#F7F5EE' || c.hex === '#F6C94B' ? 'color:#4a3626' : 'color:#fff;font-weight:800;' }, c.name));
-    grid.appendChild(tile);
-  });
-  wrap.appendChild(grid);
-  navigateTo('cat-colors');
-}
-function openColorDetail(c){
-  setTitle(c.name);
-  const wrap = document.getElementById('color-detail');
-  wrap.innerHTML = '';
-  const panel = el('div', { class: 'detail-panel' },
-    el('div', { style: `width:110px;height:110px;border-radius:50%;background:${c.hex};margin:0 auto 14px;border:6px dashed rgba(255,255,255,0.7);box-shadow:0 5px 0 rgba(90,64,50,0.2);` }),
-    el('div', { class: 'big-word' }, c.name),
-    el('button', { class: 'speak-btn', onclick: () => speak(c.name) }, '🔊 Tinglash')
-  );
-  wrap.appendChild(panel);
-  navigateTo('color-detail-view');
-  speak(c.name);
-}
-
-/* ---- Geometrik shakllar ---- */
-function shapeSVG(kind, color){
-  const s = 90;
-  switch(kind){
-    case 'circle': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><circle cx="50" cy="50" r="38" fill="${color}" stroke="#5A4032" stroke-width="4"/></svg>`;
-    case 'triangle': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><polygon points="50,12 88,86 12,86" fill="${color}" stroke="#5A4032" stroke-width="4" stroke-linejoin="round"/></svg>`;
-    case 'square': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><rect x="14" y="14" width="72" height="72" rx="8" fill="${color}" stroke="#5A4032" stroke-width="4"/></svg>`;
-    case 'rect': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><rect x="8" y="26" width="84" height="48" rx="8" fill="${color}" stroke="#5A4032" stroke-width="4"/></svg>`;
-    case 'oval': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><ellipse cx="50" cy="50" rx="42" ry="28" fill="${color}" stroke="#5A4032" stroke-width="4"/></svg>`;
-    case 'star': return `<svg viewBox="0 0 100 100" width="${s}" height="${s}"><polygon points="50,8 61,38 93,38 67,57 77,88 50,69 23,88 33,57 7,38 39,38" fill="${color}" stroke="#5A4032" stroke-width="3.5" stroke-linejoin="round"/></svg>`;
-    default: return '';
-  }
-}
-const PALETTE_HEX = ['#F6B9CF','#F8D77E','#A9DED2','#A9CDF0','#D3B8F0','#F3AA82','#7FD6C9'];
-
-function openShapesList(){
-  setTitle('Geometrik shakllar');
-  const wrap = document.getElementById('shapes-grid');
-  wrap.innerHTML = '';
-  const grid = el('div', { class: 'item-grid' });
-  SHAPES.forEach(s => {
-    const tile = el('button', { class: `yarn-tile ${paletteClass(s.pal)}`, onclick: () => openShapeDetail(s) },
-      el('span', { html: shapeSVG(s.kind, '#fff') })
-    );
-    grid.appendChild(tile);
-  });
-  wrap.appendChild(grid);
-  navigateTo('cat-shapes');
-}
-function openShapeDetail(s){
-  setTitle(s.name);
-  const wrap = document.getElementById('shape-detail');
-  wrap.innerHTML = '';
-  const panel = el('div', { class: 'detail-panel' },
-    el('div', { html: shapeSVG(s.kind, PALETTE_HEX[s.pal]) }),
-    el('div', { class: 'big-word' }, s.name),
-    el('button', { class: 'speak-btn', onclick: () => speak(s.name) }, '🔊 Tinglash')
-  );
-  wrap.appendChild(panel);
-  navigateTo('shape-detail-view');
-  speak(s.name);
-}
-
-/* ---- Tana a'zolari ---- */
-function openBodyList(){
-  setTitle('Tana a’zolari');
-  renderTileGrid('body-grid', BODY_PARTS, {
-    tileLabel: b => b.emoji,
-    tileSub: b => b.name,
-    onOpen: b => openBodyDetail(b)
-  });
-  navigateTo('cat-body');
-}
-function openBodyDetail(b){
-  setTitle(b.name);
-  renderDetail('body-detail', { glyph: b.emoji, word: b.name, speech: b.name });
-  navigateTo('body-detail-view');
-  speak(b.name);
-}
-
-/* ---- Vaqt ---- */
-function clockSVG(h, m){
-  const minAngle = m * 6;
-  const hourAngle = (h % 12) * 30 + m * 0.5;
-  return `<svg viewBox="0 0 160 160" width="150" height="150">
-    <circle cx="80" cy="80" r="66" fill="#FFFDF6" stroke="#D89A2C" stroke-width="8" stroke-dasharray="3 8"/>
-    ${[...Array(12)].map((_,i)=>{
-      const a = i*30*Math.PI/180;
-      const x1 = 80+52*Math.sin(a), y1 = 80-52*Math.cos(a);
-      const x2 = 80+60*Math.sin(a), y2 = 80-60*Math.cos(a);
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8a5a2b" stroke-width="3" stroke-linecap="round"/>`;
-    }).join('')}
-    <line x1="80" y1="80" x2="${80+32*Math.sin(hourAngle*Math.PI/180)}" y2="${80-32*Math.cos(hourAngle*Math.PI/180)}" stroke="#5A4032" stroke-width="7" stroke-linecap="round"/>
-    <line x1="80" y1="80" x2="${80+48*Math.sin(minAngle*Math.PI/180)}" y2="${80-48*Math.cos(minAngle*Math.PI/180)}" stroke="#E8799F" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="80" cy="80" r="6" fill="#5A4032"/>
-  </svg>`;
-}
-function openTimeList(){
-  setTitle('Vaqt');
-  const wrap = document.getElementById('time-grid');
-  wrap.innerHTML = '';
-  const grid = el('div', { class: 'item-grid' });
-  CLOCKS.forEach(c => {
-    const tile = el('button', { class: `yarn-tile ${paletteClass(c.pal)}`, onclick: () => openClockDetail(c) },
-      el('span', {}, c.label)
-    );
-    grid.appendChild(tile);
-  });
-  wrap.appendChild(grid);
-  navigateTo('cat-time');
-}
-function openClockDetail(c){
-  setTitle(c.label);
-  const wrap = document.getElementById('clock-detail');
-  wrap.innerHTML = '';
-  const panel = el('div', { class: 'detail-panel' },
-    el('div', { class: 'clock-face-wrap', html: clockSVG(c.h, c.m) }),
-    el('div', { class: 'big-word' }, `Bu soat ${c.label} bo‘ldi`),
-    el('div', { class: 'helper-text' }, 'Bu soat nechchi bo‘ldi? 🤔'),
-    el('button', { class: 'speak-btn', onclick: () => speak(`Soat ${c.label.replace(':00','')}`) }, '🔊 Tinglash')
-  );
-  wrap.appendChild(panel);
-  navigateTo('clock-detail-view');
-}
-
-/* ---- Umumiy emoji-ro'yxat generatori (Hayvonlar/Mevalar/Tabiat/Transport) ---- */
-function makeEmojiSection(key, title, data){
-  return {
-    openList(){
-      setTitle(title);
-      renderTileGrid(`${key}-grid`, data, {
-        tileLabel: it => it.emoji,
-        tileSub: it => it.name,
-        onOpen: it => this.openDetail(it)
-      });
-      navigateTo(`cat-${key}`);
-    },
-    openDetail(it){
-      setTitle(it.name);
-      renderDetail(`${key}-detail`, { glyph: it.emoji, word: it.name, speech: it.name });
-      navigateTo(`${key}-detail-view`);
-      speak(it.name);
-    }
-  };
-}
-const animalsSection    = makeEmojiSection('animals', 'Hayvonlar', ANIMALS);
-const fruitsSection     = makeEmojiSection('fruits', 'Mevalar', FRUITS);
-const natureSection     = makeEmojiSection('nature', 'Tabiat', NATURE);
-const transportSection  = makeEmojiSection('transport', 'Transport', TRANSPORT);
-
-/* ---------------- NAVIGATE ROUTER ---------------- */
-
-/* Bosh sahifadagi kartochka bosilganda tegishli bo'limni ochadigan funksiyalar.
-   Kalit — CATEGORIES ro'yxatidagi category.id bilan bir xil. */
-const CATEGORY_OPENERS = {
-  letters: openLettersList,
-  numbers: openNumbersList,
-  colors: openColorsList,
-  shapes: openShapesList,
-  body: openBodyList,
-  time: openTimeList,
-  animals: () => animalsSection.openList(),
-  fruits: () => fruitsSection.openList(),
-  nature: () => natureSection.openList(),
-  transport: () => transportSection.openList()
-};
-
-function navigateTo(viewId, isBack=false){
-  const openers = {
-    home: () => { renderHome(); showView('home'); },
-    'cat-letters': openLettersList,
-    'cat-numbers': openNumbersList,
-    'cat-colors': openColorsList,
-    'cat-shapes': openShapesList,
-    'cat-body': openBodyList,
-    'cat-time': openTimeList,
-    'cat-animals': () => animalsSection.openList(),
-    'cat-fruits': () => fruitsSection.openList(),
-    'cat-nature': () => natureSection.openList(),
-    'cat-transport': () => transportSection.openList(),
-    ranking: () => { renderRanking(); showView('ranking'); }
-  };
-  if(isBack && openers[viewId]){
-    openers[viewId]();
-    return;
-  }
-  showView(viewId);
-}
-
-/* ---------------- QUIZ ---------------- */
-
-function buildQuestionBank(){
-  const bank = [];
-  LETTERS.forEach(l => bank.push({
-    text: `“${l.word}” so‘zi qaysi harfdan boshlanadi?`,
-    correct: l.letter,
-    pool: LETTERS.map(x => x.letter),
-    glyph: '🔤'
-  }));
-  NUMBERS.forEach(n => bank.push({
-    text: `“${n.word}” soni raqamda qanday yoziladi?`,
-    correct: n.digit,
-    pool: NUMBERS.map(x => x.digit),
-    glyph: '🔢'
-  }));
-  COLORS.forEach(c => bank.push({
-    text: `Ekrandagi rang qanday nomlanadi?`,
-    correct: c.name,
-    pool: COLORS.map(x => x.name),
-    glyph: '🎨',
-    swatchHex: c.hex
-  }));
-  SHAPES.forEach(s => bank.push({
-    text: `Bu qaysi shakl?`,
-    correct: s.name,
-    pool: SHAPES.map(x => x.name),
-    glyph: shapeSVG(s.kind, '#F6B9CF')
-  }));
-  FRUITS.forEach(f => bank.push({
-    text: `Bu qaysi meva?`,
-    correct: f.name,
-    pool: FRUITS.map(x => x.name),
-    glyph: f.emoji
-  }));
-  ANIMALS.forEach(a => bank.push({
-    text: `Bu qaysi hayvon?`,
-    correct: a.name,
-    pool: ANIMALS.map(x => x.name),
-    glyph: a.emoji
-  }));
-  CLOCKS.forEach(c => bank.push({
-    text: `Bu soat nechchi bo‘ldi?`,
-    correct: c.label,
-    pool: CLOCKS.map(x => x.label),
-    glyph: clockSVG(c.h, c.m)
-  }));
-  return bank;
-}
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function pickOptions(correct, pool){
-  const others = shuffle(pool.filter(p => p !== correct)).slice(0, 3);
-  return shuffle([correct, ...others]);
-}
-
-function startQuiz(){
-  const bank = shuffle(buildQuestionBank()).slice(0, 10);
-  state.quiz = { questions: bank, index: 0, score: 0 };
-  setTitle('Quiz');
-  navigateTo('quiz-run');
-  renderQuizQuestion();
-}
-
-function renderQuizQuestion(){
-  const q = state.quiz;
-  const wrap = document.getElementById('quiz-body');
-  wrap.innerHTML = '';
-  const question = q.questions[q.index];
-  const options = pickOptions(question.correct, question.pool);
-
-  wrap.appendChild(el('div', { class: 'quiz-progress' },
-    el('span', {}, `Savol ${q.index + 1}/10`),
-    el('span', {}, `⭐ Ball: ${q.score}/10`)
-  ));
-
-  const isSvgGlyph = typeof question.glyph === 'string' && question.glyph.trim().startsWith('<svg');
-  const qCard = el('div', { class: 'quiz-question-card' },
-    el('div', { class: 'qtext' }, question.text),
-    question.swatchHex
-      ? el('div', { style: `width:70px;height:70px;border-radius:50%;background:${question.swatchHex};margin:8px auto;border:5px dashed rgba(0,0,0,0.15);` })
-      : el('div', { class: 'qglyph', html: isSvgGlyph ? question.glyph : '' }, isSvgGlyph ? null : question.glyph)
-  );
-  wrap.appendChild(qCard);
-
-  const optWrap = el('div', { class: 'quiz-options' });
-  options.forEach(opt => {
-    const btn = el('button', { class: 'quiz-opt', onclick: (e) => answerQuiz(e.currentTarget, opt, question.correct) }, opt);
-    optWrap.appendChild(btn);
-  });
-  wrap.appendChild(optWrap);
-}
-
-function answerQuiz(btnEl, chosen, correct){
-  const allBtns = $all('.quiz-opt', btnEl.parentElement);
-  allBtns.forEach(b => b.disabled = true);
-  const isCorrect = chosen === correct;
-  if(isCorrect){
-    btnEl.classList.add('correct');
-    state.quiz.score += 1;
-    speak('To‘g‘ri javob!');
-  } else {
-    btnEl.classList.add('wrong');
-    allBtns.forEach(b => { if(b.textContent === correct) b.classList.add('correct'); });
-    speak('Keyingi safar to‘g‘ri bo‘ladi');
-  }
-  setTimeout(() => {
-    state.quiz.index += 1;
-    if(state.quiz.index >= state.quiz.questions.length){
-      showQuizResult();
-    } else {
-      renderQuizQuestion();
-    }
-  }, 950);
-}
-
-function showQuizResult(){
-  setTitle('Natija');
-  navigateTo('quiz-result');
-  const score = state.quiz.score;
-  let msg, trophy;
-  if(score >= 9){ msg = `${score}/10 — Ajoyib!`; trophy = '🏆'; }
-  else if(score >= 7){ msg = `${score}/10 — Juda yaxshi!`; trophy = '🥇'; }
-  else if(score >= 5){ msg = `${score}/10 — Yaxshi, davom eting!`; trophy = '🥈'; }
-  else { msg = `${score}/10 — Yana mashq qilamiz!`; trophy = '💪'; }
-
-  const wrap = document.getElementById('quiz-result-body');
-  wrap.innerHTML = '';
-  wrap.appendChild(el('div', { class: 'quiz-result' },
-    el('div', { class: 'trophy' }, trophy),
-    el('h2', {}, 'TABRIKLAYMIZ!'),
-    el('p', {}, msg),
-    el('div', { class: 'name-input-row' },
-      el('input', { id: 'player-name', type: 'text', maxlength: '16', placeholder: 'Ismingizni kiriting' }),
-    ),
-    el('button', { class: 'primary-btn', style: 'margin-top:14px;width:100%;', onclick: () => submitRanking(score) }, '🏆 Reytingga qo‘shish'),
-    el('button', { class: 'secondary-btn', onclick: () => startQuiz() }, '🔁 Qayta boshlash')
-  ));
-}
-
-/* ---------------- REYTING (localStorage) ---------------- */
-
-const RANK_KEY = 'bolajonlar_ranking_v1';
-
-function loadRanking(){
-  try{
-    const raw = localStorage.getItem(RANK_KEY);
-    return raw ? JSON.parse(raw) : [];
-  }catch(e){ return []; }
-}
-function saveRanking(list){
-  try{ localStorage.setItem(RANK_KEY, JSON.stringify(list)); }catch(e){ /* xotira to'liq bo'lishi mumkin */ }
-}
-function submitRanking(score){
-  const input = document.getElementById('player-name');
-  let name = (input && input.value || '').trim();
-  if(!name) name = 'Mehmon';
-  const list = loadRanking();
-  list.push({ name: name.slice(0, 16), score, ts: Date.now() });
-  list.sort((a, b) => b.score - a.score || a.ts - b.ts);
-  saveRanking(list.slice(0, 10));
-  setTitle('Reyting');
-  navigateTo('ranking');
-}
-
-function renderRanking(){
-  setTitle('Reyting');
-  const list = loadRanking();
-  const wrap = document.getElementById('ranking-body');
-  wrap.innerHTML = '';
-  if(list.length === 0){
-    wrap.appendChild(el('div', { class: 'empty-note' }, '🧶 Hali hech kim quiz topshirmagan. Birinchi bo‘ling!'));
-    return;
-  }
-  const medals = ['🥇','🥈','🥉'];
-  const rows = el('div', { class: 'rank-list' });
-  list.forEach((r, i) => {
-    rows.appendChild(el('div', { class: 'rank-row' },
-      el('span', { class: 'rank-medal' }, medals[i] || `${i + 1}`),
-      el('span', { class: 'rank-name' }, r.name),
-      el('span', { class: 'rank-score' }, `${r.score}/10`)
-    ));
-  });
-  wrap.appendChild(rows);
-}
-
-/* ---------------- INIT ---------------- */
-
-function initNav(){
-  document.getElementById('back-btn').addEventListener('click', goBack);
-  document.getElementById('nav-home').addEventListener('click', () => { setTitle('Bolajonlar'); navigateTo('home'); });
-  document.getElementById('nav-lessons').addEventListener('click', () => { setTitle('Darslar'); navigateTo('home'); });
-  document.getElementById('nav-quiz').addEventListener('click', () => startQuiz());
-  document.getElementById('nav-ranking').addEventListener('click', () => { setTitle('Reyting'); navigateTo('ranking'); });
-}
-
-function init(){
-  renderHome();
-  initNav();
-  showView('home', { silentHistory: true });
-  state.history = ['home'];
-
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
-}
-
-document.addEventListener('DOMContentLoaded', init);
+function home(){setHead();let install=deferredPrompt?`<div class="install-card"><strong>📲 Bolajonlarni telefonga o‘rnating</strong><span>Internet bo‘lmasa ham ishlaydi.</span><button id="installHome">Ilovani o‘rnatish</button></div>`:'';main.innerHTML=`<section class="view">${install}<p class="eyebrow">Qaysi darsni boshlaymiz?</p><div class="home-grid">${cats.map((c,i)=>`<button class="cat c${i%11}" data-go="${c[0]}"><img src="assets/icons/${c[2]}" alt=""><span>${c[1]}</span></button>`).join('')}</div></section>`;$('#installHome')?.addEventListener('click',installApp);main.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go))}
+function list(key){let d=lessons[key];setHead(d.title,'Birini tanlang va tinglang!');main.innerHTML=`<section class="view"><p class="helper">Elementni bosing 🔊</p><div class="grid">${d.items.map((x,i)=>{let visual='';if(key==='letters'||key==='numbers')visual=yarnText(x[0],P[i%P.length]);else if(key==='colors')visual=`<div class="color-blob" style="background:${x[1]}"></div>`;else visual=`<div class="art">${art(x[1],P[i%P.length])}</div>`;return `<button class="yarn-card" data-i="${i}">${visual}<small>${x[0]}</small></button>`}).join('')}</div></section>`;main.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>detail(key,+b.dataset.i))}
+function detail(key,i){let x=lessons[key].items[i],visual=key==='letters'||key==='numbers'?yarnText(x[0],P[i%P.length]):key==='colors'?`<div class="color-blob" style="width:160px;height:160px;background:${x[1]}"></div>`:`<div class="art">${art(x[1],P[i%P.length])}</div>`;setHead(x[0],lessons[key].title);main.innerHTML=`<section class="view"><article class="detail"><div class="big-art">${visual}</div><h2>${esc(x[0])}${key==='letters'?' — ':''}${key==='letters'?esc(x[1]):''}</h2><p>${key==='letters'?'Harflarni sekin va aniq takrorlang.':key==='numbers'?'Sonni aytib ko‘ring.':'Nomini eslab qoling.'}</p><button class="action full" id="speak">🔊 Tinglash</button></article><div class="pager"><button class="secondary" id="prev">← Oldingisi</button><button class="action" id="next">Keyingisi →</button></div></section>`;$('#speak').onclick=()=>speak(key==='letters'?`${x[0]} — ${x[1]}`:key==='numbers'?x[1]:x[0]);$('#prev').onclick=()=>detail(key,(i-1+lessons[key].items.length)%lessons[key].items.length);$('#next').onclick=()=>detail(key,(i+1)%lessons[key].items.length);speak(key==='letters'?`${x[0]} — ${x[1]}`:key==='numbers'?x[1]:x[0])}
+function timeView(){setHead('Vaqt','Soatni o‘rganamiz!');main.innerHTML=`<section class="view"><article class="clock-card"><div class="clock" id="clock">${Array.from({length:12},(_,i)=>`<i class="tick" style="transform:rotate(${i*30}deg)"></i>`).join('')}<i class="hand hour" id="hh"></i><i class="hand minute" id="mm"></i></div><h2 style="text-align:center">Bu soat nechchi?</h2><p class="helper" id="clockLabel" style="text-align:center"></p><div class="time-options" id="timeOpts"></div><button class="action full" id="newClock" style="margin-top:12px">Yangi mashq</button></article></section>`;newClock()}
+function newClock(){let vals=[1,3,6,9,12],v=vals[Math.floor(Math.random()*vals.length)];$('#hh').style.transform=`rotate(${(v%12)*30}deg)`;$('#mm').style.transform='rotate(0deg)';$('#clockLabel').textContent='Soatga qarang va javobni tanlang.';let opts=[...new Set([v,...vals.sort(()=>Math.random()-.5).slice(0,3)])].sort(()=>Math.random()-.5);$('#timeOpts').innerHTML=opts.map(n=>`<button data-v="${n}">${n}:00</button>`).join('');$('#timeOpts').querySelectorAll('button').forEach(b=>b.onclick=()=>{let ok=+b.dataset.v===v;b.style.background=ok?'#a9ded2':'#f6b9cf';if(ok){$('#clockLabel').textContent='Ajoyib! To‘g‘ri javob 🎉';speak(`${v}:00`)}else $('#clockLabel').textContent='Yana bir marta urinib ko‘ring.'});$('#newClock').onclick=newClock}
+function makeQuestions(){let q=[];for(let i=0;i<2;i++){let a=lessons.letters.items[Math.floor(Math.random()*lessons.letters.items.length)],wrong=lessons.letters.items.filter(x=>x!==a).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[1]);q.push({t:`${a[0]} harfi qaysi so‘z bilan boshlanadi?`,art:yarnText(a[0],P[i]),a:a[1],o:[a[1],...wrong]})}for(let i=0;i<2;i++){let n=lessons.numbers.items[Math.floor(Math.random()*10)],wrong=lessons.numbers.items.filter(x=>x!==n).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[1]);q.push({t:`${n[0]} soni qanday aytiladi?`,art:yarnText(n[0],P[i+2]),a:n[1],o:[n[1],...wrong]})}for(let i=0;i<2;i++){let c=lessons.colors.items[Math.floor(Math.random()*10)],wrong=lessons.colors.items.filter(x=>x!==c).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[0]);q.push({t:'Bu qaysi rang?',art:`<div class="color-blob" style="width:110px;height:110px;background:${c[1]}"></div>`,a:c[0],o:[c[0],...wrong]})}for(let i=0;i<2;i++){let s=lessons.shapes.items[Math.floor(Math.random()*6)],wrong=lessons.shapes.items.filter(x=>x!==s).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[0]);q.push({t:'Bu qaysi shakl?',art:`<div class="art">${art(s[1],P[i+4])}</div>`,a:s[0],o:[s[0],...wrong]})}let groups=[['animals','Qaysi hayvon?'],['fruits','Qaysi meva?']];groups.forEach((g,i)=>{let d=lessons[g[0]],x=d.items[Math.floor(Math.random()*d.items.length)],wrong=d.items.filter(z=>z!==x).sort(()=>Math.random()-.5).slice(0,3).map(z=>z[0]);q.push({t:g[1],art:`<div class="art">${art(x[1],P[i+1])}</div>`,a:x[0],o:[x[0],...wrong]})});return q.sort(()=>Math.random()-.5)}
+function startQuiz(){history.push(current);current='quiz';quizState={q:makeQuestions(),i:0,score:0};renderQuiz()}
+function renderQuiz(){setHead('Quiz','10 ta savol');let s=quizState,x=s.q[s.i],opts=[...x.o].sort(()=>Math.random()-.5);main.innerHTML=`<section class="view"><article class="quiz-card"><div class="section-head"><b>⭐ Ball: ${s.score}/10</b><b>${s.i+1}/10</b></div><div class="progress"><i style="width:${(s.i/10)*100}%"></i></div><div class="question">${esc(x.t)}</div><div class="quiz-art">${x.art}</div><div class="choices">${opts.map(o=>`<button class="choice" data-a="${esc(o)}">${esc(o)}</button>`).join('')}</div></article></section>`;main.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(b,x))}
+function answer(btn,x){let ok=btn.dataset.a===x.a;main.querySelectorAll('.choice').forEach(b=>b.disabled=true);btn.classList.add(ok?'correct':'wrong');if(ok)quizState.score++;speak(ok?'To‘g‘ri! Ajoyib!':'Yana mashq qilamiz!');setTimeout(()=>{quizState.i++;quizState.i<10?renderQuiz():quizResult()},700)}
+function quizResult(){current='quiz-result';setHead('Natija','Ajoyib harakat!');let s=quizState.score,msg=s===10?'10/10 — Ajoyib!':s>=8?`${s}/10 — Juda yaxshi!`:s>=5?`${s}/10 — Yana mashq qilamiz!`:`${s}/10 — Ko‘proq mashq qilsak, yanada yaxshi bo‘ladi!`;main.innerHTML=`<section class="view"><article class="quiz-card result"><div class="trophy">🏆</div><h2>TABRIKLAYMIZ!</h2><div class="stars">${'⭐'.repeat(Math.max(1,Math.ceil(s/2)))}</div><h3>${msg}</h3><div class="name-row"><input id="player" maxlength="24" placeholder="Ismingiz"><button id="save">Reytingga qo‘shish</button></div><button class="secondary" id="again" style="width:100%;margin-top:12px">Quizni qayta boshlash</button></article></section>`;$('#again').onclick=startQuiz;$('#save').onclick=saveScore}
+function scores(){try{return JSON.parse(localStorage.getItem('bolajonlarScores')||'[]')}catch{return[]}}
+function saveScore(){let name=$('#player').value.trim();if(!name)return toast('Avval ismingizni kiriting');let a=scores();a.push({name:name,score:quizState.score,date:Date.now()});a.sort((x,y)=>y.score-x.score||x.date-y.date);a=a.slice(0,10);localStorage.setItem('bolajonlarScores',JSON.stringify(a));toast('Natijangiz saqlandi!');setTimeout(()=>go('ranking'),500)}
+function ranking(){setHead('Reyting','Eng yaxshi 10 natija');let a=scores();main.innerHTML=`<section class="view"><article class="ranking-card"><h2>🏆 Reyting</h2><p class="helper">Natijalar faqat shu qurilmada saqlanadi.</p><div class="ranking-list">${a.length?a.map((x,i)=>`<div class="rank"><b>${['🥇','🥈','🥉'][i]||i+1+'.'}</b><span>${esc(x.name)}</span><strong>${x.score}/10</strong></div>`).join(''):'<div class="empty">Hali natijalar yo‘q. Quizni boshlab birinchi bo‘ling!</div>'}</div></article></section>`}
+function render(){if(current==='home')return home();if(lessons[current])return list(current);if(current==='time')return timeView();if(current==='quiz')return startQuiz();if(current==='ranking')return ranking();}
+$('#backBtn').onclick=back;document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{let v=b.dataset.nav==='lessons'?'letters':b.dataset.nav;go(v)});function markNav(){document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.toggle('active',(b.dataset.nav==='home'&&current==='home')||(b.dataset.nav==='lessons'&&lessons[current])||(b.dataset.nav===current)))}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installBtn').classList.remove('hidden')});async function installApp(){if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;toast('O‘rnatish so‘rovi yuborildi');render()}else toast('Brauzer menyusidan “Bosh ekranga qo‘shish”ni tanlang')};$('#installBtn').onclick=installApp;
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+home();markNav();
