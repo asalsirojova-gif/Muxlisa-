@@ -1,14 +1,40 @@
 <!doctype html>
-<html lang="uz"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F4A6C1"><meta name="description" content="Bolajonlar — internetisiz ishlaydigan bolalar ta'limiy PWA ilovasi">
-<title>Bolajonlar — O‘ynab o‘rganamiz!</title>
-<link rel="manifest" href="manifest.json"><link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/icons/logo.svg"><link rel="stylesheet" href="style.css">
-</head><body>
-<div class="app" id="app">
-<header class="topbar"><button class="back hidden" id="backBtn" aria-label="Orqaga">←</button><img src="assets/icons/logo.svg" class="logo" alt="Bolajonlar logotipi"><div><h1 id="title">Bolajonlar</h1><p id="subtitle">O‘ynab o‘rganamiz!</p></div><button class="install-mini" id="installBtn" aria-label="Ilovani o‘rnatish">⇩</button></header>
-<main id="main"></main>
-<nav class="bottom-nav"><button data-nav="home"><span>⌂</span>Bosh sahifa</button><button data-nav="lessons"><span>▦</span>Darslar</button><button data-nav="quiz"><span>✦</span>Quiz</button><button data-nav="ranking"><span>♕</span>Reyting</button></nav>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7a8c2">
+  <meta name="description" content="Bolajonlar — O‘zbek tilidagi bolalar uchun oflayn ta’limiy PWA.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Bolajonlar — O‘ynab o‘rganamiz!</title>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="back-btn" id="backBtn" aria-label="Orqaga">‹</button>
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><i></i><b></b><em></em><strong></strong></div>
+      <div><h1>Bolajonlar</h1><p>O‘ynab o‘rganamiz!</p></div>
+    </div>
+    <button class="sound-btn" id="globalSoundBtn" aria-label="Ovoz">♪</button>
+  </header>
+
+  <main id="app" class="screen" tabindex="-1"></main>
+
+  <nav class="bottom-nav" aria-label="Asosiy navigatsiya">
+    <button data-route="home" class="nav-btn active"><span class="nav-glyph">⌂</span><span>Bosh sahifa</span></button>
+    <button data-route="lessons" class="nav-btn"><span class="nav-glyph">▦</span><span>Darslar</span></button>
+    <button data-route="quiz" class="nav-btn"><span class="nav-glyph">✦</span><span>Quiz</span></button>
+    <button data-route="ranking" class="nav-btn"><span class="nav-glyph">♕</span><span>Reyting</span></button>
+  </nav>
 </div>
-<div class="toast" id="toast" aria-live="polite"></div><script src="app.js"></script>
-</body></html>
+
+<div id="toast" class="toast" role="status"></div>
+<div id="installBar" class="install-bar" hidden>
+  <div><b>Bolajonlar ilovasini o‘rnating</b><span>Telefoningizda tezroq ochiladi.</span></div>
+  <button id="installBtn" class="mini-primary">O‘rnatish</button>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
