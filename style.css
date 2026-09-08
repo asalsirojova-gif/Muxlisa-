@@ -1,254 +1,150 @@
+/* =========================================
+   BOLAJONLAR — ASOSIY SOZLAMALAR
+========================================= */
+
+:root {
+  --pink: #ff7fa8;
+  --pink-dark: #d95a85;
+  --pink-light: #ffd6e5;
+
+  --purple: #806b91;
+  --cream: #fff7f2;
+  --cream-dark: #f4e7df;
+
+  --white: #ffffff;
+  --text: #493d46;
+  --text-light: #81737b;
+
+  --yellow: #ffd86b;
+  --green: #89c997;
+
+  --shadow: rgba(85, 55, 70, 0.14);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #fff7f2;
-  color: #473b45;
-  min-height: 100vh;
+html {
+  min-height: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ASOSIY ILOVA */
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(
+      circle at 20% 10%,
+      #ffe5ee 0,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 90% 40%,
+      #fff0cb 0,
+      transparent 28%
+    ),
+    var(--cream);
+}
+
+
+/* =========================================
+   ASOSIY ILOVA
+========================================= */
+
 #app {
   width: 100%;
-  max-width: 500px;
-  min-height: 100vh;
-  margin: auto;
-  padding-bottom: 100px;
-  background: #fffaf7;
+  max-width: 650px;
+  min-height: calc(100vh - 145px);
+  margin: 0 auto;
+  padding-bottom: 30px;
 }
 
-/* TO‘QILGAN IP FONI */
-.wool-card {
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.25) 0px,
-      rgba(255,255,255,0.25) 2px,
-      transparent 2px,
-      transparent 6px
-    ),
-    #ffd6e5;
 
-  border-radius: 30px;
-  box-shadow:
-    0 8px 0 rgba(185, 125, 145, 0.35),
-    0 15px 30px rgba(0,0,0,0.08);
-}
+/* =========================================
+   YUQORI PANEL
+========================================= */
 
-/* HEADER */
-.header {
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  width: 100%;
+  min-height: 76px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 15px;
-  background: white;
-  border-bottom: 2px solid #f5e5df;
+  padding: 10px 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(255, 240, 246, 0.96)
+    );
+
+  border-bottom: 2px solid #f5e1e9;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
-.logo-area {
+.brand {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  min-width: 0;
 }
 
-.logo-area img {
-  width: 55px;
-  height: 55px;
+.brand-logo {
+  width: 54px;
+  height: 54px;
+
   object-fit: contain;
-  border-radius: 15px;
+
+  border-radius: 18px;
+
+  background: var(--pink-light);
+  padding: 4px;
+
+  box-shadow:
+    0 5px 0 rgba(200, 125, 150, 0.18),
+    0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
-.logo-text h1 {
-  font-size: 20px;
-  color: #e85f91;
+.brand h1 {
+  font-size: 21px;
+  line-height: 1.1;
+  color: var(--pink-dark);
 }
 
-.logo-text p {
+.brand p {
+  margin-top: 4px;
+
   font-size: 12px;
-  color: #877680;
+  color: var(--text-light);
 }
 
-/* BOSH SAHIFA */
-.home-container {
-  padding: 15px;
-}
 
-.welcome-box {
-  padding: 25px;
-  margin-bottom: 25px;
-  text-align: center;
-}
+/* =========================================
+   ORQAGA VA OVOZ TUGMALARI
+========================================= */
 
-.welcome-box h2 {
-  font-size: 27px;
-  color: #d94f85;
-  margin-bottom: 10px;
-}
+.back-btn,
+.sound-btn {
+  width: 45px;
+  height: 45px;
 
-.welcome-box p {
-  line-height: 1.6;
-}
+  flex-shrink: 0;
 
-/* BO‘LIMLAR */
-.categories {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-}
-
-.category {
-  border: none;
-  border-radius: 25px;
-  padding: 12px;
-
-  background: white;
-
-  box-shadow:
-    0 6px 0 #ead9d3,
-    0 12px 25px rgba(0,0,0,0.08);
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-.category:active {
-  transform: translateY(5px);
-
-  box-shadow:
-    0 1px 0 #ead9d3;
-}
-
-.category img {
-  width: 100%;
-  height: 110px;
-  object-fit: contain;
-
-  border-radius: 18px;
-}
-
-.category h3 {
-  margin-top: 8px;
-  font-size: 16px;
-  color: #493d46;
-}
-
-/* DARS SAHIFASI */
-.lesson-container {
-  padding: 15px;
-}
-
-.lesson-card {
-  background: white;
-
-  border-radius: 30px;
-
-  padding: 20px;
-
-  box-shadow:
-    0 8px 0 #ead9d3,
-    0 15px 30px rgba(0,0,0,0.08);
-
-  text-align: center;
-}
-
-.lesson-image {
-  width: 100%;
-  height: 300px;
-
-  object-fit: contain;
-
-  border-radius: 25px;
-
-  background: #fff3ed;
-}
-
-.lesson-title {
-  font-size: 28px;
-  margin: 20px 0 10px;
-}
-
-/* TUGMALAR */
-.button {
-  border: none;
-
-  padding: 14px 20px;
-
-  border-radius: 20px;
-
-  font-size: 16px;
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-.primary-button {
-  background: #ff7eae;
-  color: white;
-
-  box-shadow: 0 5px 0 #d85a89;
-}
-
-.primary-button:active {
-  transform: translateY(4px);
-  box-shadow: none;
-}
-
-.secondary-button {
-  background: white;
-  color: #6c5964;
-
-  box-shadow: 0 5px 0 #e5d8d2;
-}
-
-/* OLDINGI VA KEYINGI */
-.navigation-buttons {
   display: flex;
+  align-items: center;
+  justify-content: center;
 
-  gap: 10px;
-
-  margin-top: 20px;
-}
-
-.navigation-buttons button {
-  flex: 1;
-}
-
-/* QUIZ */
-.quiz-container {
-  padding: 15px;
-}
-
-.quiz-card {
-  background: white;
-
-  padding: 20px;
-
-  border-radius: 30px;
-
-  box-shadow:
-    0 8px 0 #ead9d3,
-    0 15px 30px rgba(0,0,0,0.08);
-}
-
-.answer {
-  width: 100%;
-
-  padding: 15px;
-
-  margin-top: 10px;
-
-  background: #fff8f3;
-
-  border: 2px solid #f0ddd5;
-
-  border-radius: 18px;
-
-  text
+ 
