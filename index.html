@@ -1,45 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="theme-color" content="#ff7fa8">
-  <meta name="description" content="Bolajonlar uchun qiziqarli va ta'limiy platforma">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#6b5cff">
+  <meta name="description" content="Bolajonlar — o‘ynab o‘rganamiz">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <title>Bolajonlar</title>
+  <title>Bolajonlar — O‘ynab o‘rganamiz!</title>
 </head>
 <body>
+<div class="app-shell">
   <header class="topbar">
-    <button id="backBtn" class="back-btn hidden" aria-label="Orqaga">←</button>
-    <div class="brand">
-      <img src="assets/icons/logo.png" alt="Bolajonlar" class="brand-logo">
-      <div>
-        <h1>Bolajonlar</h1>
-        <p>O‘ynab o‘rganamiz!</p>
-      </div>
+    <button class="icon-btn back-btn" id="backBtn" aria-label="Orqaga">←</button>
+    <div class="brand" id="brandBtn">
+      <img src="assets/icons/logo.png" alt="Bolajonlar" onerror="this.style.display='none'">
+      <div><b>Bolajonlar</b><small>O‘ynab o‘rganamiz!</small></div>
     </div>
-    <button id="globalSoundBtn" class="sound-btn" aria-label="Ovoz">🔊</button>
+    <button class="icon-btn" id="soundToggle" aria-label="Ovoz">🔊</button>
   </header>
 
-  <main id="app" tabindex="-1"></main>
+  <main id="app" class="content"></main>
 
-  <nav class="bottom-nav">
-    <button class="nav-btn active" data-route="home"><span>⌂</span><span>Bosh sahifa</span></button>
-    <button class="nav-btn" data-route="lessons"><span>▦</span><span>Darslar</span></button>
-    <button class="nav-btn" data-route="quiz"><span>✦</span><span>Quiz</span></button>
-    <button class="nav-btn" data-route="ranking"><span>♕</span><span>Reyting</span></button>
+  <nav class="bottom-nav" aria-label="Asosiy navigatsiya">
+    <button data-nav="home">⌂<span>Bosh sahifa</span></button>
+    <button data-nav="lessons">📚<span>Darslar</span></button>
+    <button data-nav="quiz">🧠<span>Quiz</span></button>
+    <button data-nav="ranking">🏆<span>Reyting</span></button>
   </nav>
-
-  <div id="installBar" class="install-box" hidden>
-    <div class="install-text">
-      <strong>📱 Bolajonlar ilovasini o‘rnating</strong>
-      <span>Telefoningizda tezroq ochiladi.</span>
-    </div>
-    <button id="installBtn">O‘rnatish</button>
-  </div>
-
-  <div id="toast"></div>
-  <script src="app.js"></script>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,14 +1,9 @@
 {
-  "name": "Bolajonlar",
+  "name": "Bolajonlar — O‘ynab o‘rganamiz!",
   "short_name": "Bolajonlar",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#fff7f2",
-  "theme_color": "#ff7fa8",
-  "lang": "uz",
-  "description": "Bolajonlar uchun qiziqarli va ta'limiy platforma",
-  "icons": [
-    {"src": "assets/icons/logo.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "assets/icons/logo.png", "sizes": "512x512", "type": "image/png"}
-  ]
+  "background_color": "#f8f7ff",
+  "theme_color": "#6b5cff",
+  "lang": "uz"
 }

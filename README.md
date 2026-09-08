@@ -1,55 +1,20 @@
-# 🧶 Bolajonlar
+# Bolajonlar
 
-Bolalar uchun qiziqarli va ta'limiy platforma.
+Bu loyiha sizning GitHub'dagi `assets` papkangizdagi haqiqiy fayl nomlariga moslab yozilgan.
 
-## 📚 Bo‘limlar
+## MUHIM
+ZIP ichida rasmlar nusxasi yo‘q. Ushbu loyiha ishlashi uchun sizning mavjud `assets/` papkangiz loyiha ildiziga, `index.html` bilan yonma-yon qo‘yilishi kerak:
 
-- 🔤 Harflar
-- 🔢 Sonlar
-- 🎨 Ranglar
-- 🔺 Shakllar
-- 👂 Tana a'zolari
-- 🍎 Mevalar
-- 🌿 Tabiat
-- 🚗 Transport
-- ⏰ Vaqt
-- 🧠 Quiz
-- 🏆 Reyting
-
-## ✨ Imkoniyatlar
-
-- Chiroyli va bolalar uchun qulay dizayn
-- 🧶 To‘qilgan ip uslubidagi interfeys
-- 📱 Telefon ekraniga mos
-- ⬅️ Oldingi va ➡️ Keyingi tugmalari
-- 🔊 So‘zlarni tinglash imkoniyati
-- 🧠 Qiziqarli Quiz
-- 🏆 Reyting tizimi
-- 💾 Natijalarni saqlash
-- 🌐 Oflayn ishlash imkoniyati
-- 📲 Telefonga ilova sifatida o‘rnatish
-
-## 📁 Loyiha tuzilishi
-
-```text
-Muxlisa-/
+bolajonlar/
 ├── index.html
 ├── style.css
 ├── app.js
-├── manifest.json
 ├── sw.js
-├── README.md
-│
+├── manifest.json
 └── assets/
     ├── icons/
-    │
     └── illustrations/
-        ├── letters/
-        ├── numbers/
-        ├── colors/
-        ├── shapes/
-        ├── body/
-        ├── fruits/
-        ├── nature/
-        ├── transport/
-        └── time/
+
+## GitHub Pages
+Barcha fayllarni repository ildiziga yuklang. Service Worker HTTPS/GitHub Pages muhitida ishlaydi.
+Birinchi ochilishda rasmlar cache'ga olinadi va keyingi foydalanishda offline ishlashi mumkin.
