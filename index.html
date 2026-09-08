@@ -1,116 +1,26 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
 
-  <meta name="theme-color" content="#ff7fa8" />
+  <!-- TELEFONDA SAYTNI TO‘G‘RI O‘LCHAMDA KO‘RSATISH -->
   <meta
-    name="description"
-    content="Bolajonlar uchun qiziqarli va ta'limiy platforma"
-  />
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#ff7fa8">
 
   <title>Bolajonlar</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- YUQORI QISM -->
-  <header class="topbar">
-    <button
-      id="backBtn"
-      class="back-btn hidden"
-      aria-label="Orqaga"
-    >
-      ←
-    </button>
-
-    <div class="brand">
-      <img
-        src="assets/icons/logo.png"
-        alt="Bolajonlar"
-        class="brand-logo"
-      />
-
-      <div>
-        <h1>Bolajonlar</h1>
-        <p>O‘ynab o‘rganamiz!</p>
-      </div>
-    </div>
-
-    <button
-      id="globalSoundBtn"
-      class="sound-btn"
-      aria-label="Ovoz"
-    >
-      🔊
-    </button>
-  </header>
-
-
-  <!-- ASOSIY ILOVA -->
-  <main id="app" tabindex="-1"></main>
-
-
-  <!-- PASTKI MENYU -->
-  <nav class="bottom-nav">
-
-    <button
-      class="nav-btn active"
-      data-route="home"
-    >
-      <span>⌂</span>
-      <span>Bosh sahifa</span>
-    </button>
-
-    <button
-      class="nav-btn"
-      data-route="lessons"
-    >
-      <span>▦</span>
-      <span>Darslar</span>
-    </button>
-
-    <button
-      class="nav-btn"
-      data-route="quiz"
-    >
-      <span>✦</span>
-      <span>Quiz</span>
-    </button>
-
-    <button
-      class="nav-btn"
-      data-route="ranking"
-    >
-      <span>♕</span>
-      <span>Reyting</span>
-    </button>
-
-  </nav>
-
-
-  <!-- TELEFONGA O'RNATISH -->
-  <div id="installBar" class="install-box" hidden>
-
-    <div class="install-text">
-      <strong>📱 Bolajonlar ilovasini o‘rnating</strong>
-      <span>Telefoningizda tezroq ochiladi.</span>
-    </div>
-
-    <button id="installBtn">
-      O‘rnatish
-    </button>
-
-  </div>
-
-
-  <!-- XABARLAR -->
-  <div id="toast"></div>
-
+  <!-- BARCHA SAHIFALAR SHU YERGA YUKLANADI -->
+  <div id="app"></div>
 
   <!-- JAVASCRIPT -->
   <script src="app.js"></script>
