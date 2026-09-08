@@ -1,13 +1,55 @@
-# Bolajonlar — Yarn/Crochet PWA
+# 🧶 Bolajonlar
 
-## Ishga tushirish
-GitHub Pages uchun barcha fayllarni bitta repozitoriyga joylashtiring. `index.html` asosiy fayl.
+Bolalar uchun qiziqarli va ta'limiy platforma.
 
-## Siz kiritadigan ikonlar
-`assets/icons/` papkasiga o‘zingiz tayyorlagan lokal SVG yoki PNG ikonlarni qo‘ying. Tashqi URL ishlatmang. Keyin kerak bo‘lsa HTML/CSS ichidagi oddiy navigatsiya belgilarini shu ikonlarga almashtiramiz.
+## 📚 Bo‘limlar
 
-## Crochet rasmlar
-`assets/illustrations/` ichidagi 4 ta poster loyiha dizayni uchun namuna sifatida kiritilgan. Keyinchalik boshqa bo‘limlar uchun ham alohida rasm fayllari qo‘shilishi mumkin.
+- 🔤 Harflar
+- 🔢 Sonlar
+- 🎨 Ranglar
+- 🔺 Shakllar
+- 👂 Tana a'zolari
+- 🍎 Mevalar
+- 🌿 Tabiat
+- 🚗 Transport
+- ⏰ Vaqt
+- 🧠 Quiz
+- 🏆 Reyting
 
-## Oflayn
-Service Worker `sw.js` asosiy fayllar va lokal rasmlarni cache qiladi. GitHub Pages HTTPS orqali ochilganda PWA funksiyalari ishlaydi.
+## ✨ Imkoniyatlar
+
+- Chiroyli va bolalar uchun qulay dizayn
+- 🧶 To‘qilgan ip uslubidagi interfeys
+- 📱 Telefon ekraniga mos
+- ⬅️ Oldingi va ➡️ Keyingi tugmalari
+- 🔊 So‘zlarni tinglash imkoniyati
+- 🧠 Qiziqarli Quiz
+- 🏆 Reyting tizimi
+- 💾 Natijalarni saqlash
+- 🌐 Oflayn ishlash imkoniyati
+- 📲 Telefonga ilova sifatida o‘rnatish
+
+## 📁 Loyiha tuzilishi
+
+```text
+Muxlisa-/
+├── index.html
+├── style.css
+├── app.js
+├── manifest.json
+├── sw.js
+├── README.md
+│
+└── assets/
+    ├── icons/
+    │
+    └── illustrations/
+        ├── letters/
+        ├── numbers/
+        ├── colors/
+        ├── shapes/
+        ├── body/
+        ├── fruits/
+        ├── nature/
+        ├── transport/
+        └── time/
