@@ -1,235 +1,557 @@
 const app = document.getElementById("app");
+const backBtn = document.getElementById("backBtn");
+const soundBtn = document.getElementById("globalSoundBtn");
+const installBar = document.getElementById("installBar");
+const installBtn = document.getElementById("installBtn");
+const toast = document.getElementById("toast");
 
-// =========================
-// BO'LIMLAR VA RASMLAR
-// =========================
+
+// ========================================
+// BOLAJONLAR — BARCHA BO'LIMLAR
+// ========================================
 
 const categories = [
 
+  // ---------------- HARFLAR ----------------
+
   {
     id: "letters",
-    title: "🔤 Harflar",
+    title: "Harflar",
+    emoji: "🔤",
     icon: "assets/icons/harflar.png",
-
     items: [
-      { name: "A", image: "assets/illustrations/letters/a.jpg" },
-      { name: "B", image: "assets/illustrations/letters/b.jpg" },
-      { name: "Ch", image: "assets/illustrations/letters/ch.jpg" },
-      { name: "D", image: "assets/illustrations/letters/d.jpg" },
-      { name: "E", image: "assets/illustrations/letters/e.jpg" },
-      { name: "F", image: "assets/illustrations/letters/f.jpg" },
-      { name: "G", image: "assets/illustrations/letters/g.jpg" },
-      { name: "G‘", image: "assets/illustrations/letters/g'.jpg" },
-      { name: "H", image: "assets/illustrations/letters/h.jpg" },
-
-      // MUHIM: i.jpg emas!
-      { name: "I", image: "assets/illustrations/letters/i1.jpg" },
-
-      { name: "J", image: "assets/illustrations/letters/j.jpg" },
-      { name: "K", image: "assets/illustrations/letters/k.jpg" },
-      { name: "L", image: "assets/illustrations/letters/l.jpg" },
-      { name: "M", image: "assets/illustrations/letters/m.jpg" },
-      { name: "N", image: "assets/illustrations/letters/n.jpg" },
-      { name: "Ng", image: "assets/illustrations/letters/ng.jpg" },
-      { name: "O", image: "assets/illustrations/letters/o.jpg" },
-      { name: "O‘", image: "assets/illustrations/letters/o'.jpg" },
-      { name: "P", image: "assets/illustrations/letters/p.jpg" },
-      { name: "Q", image: "assets/illustrations/letters/q.jpg" },
-      { name: "R", image: "assets/illustrations/letters/r.jpg" },
-      { name: "S", image: "assets/illustrations/letters/s.jpg" },
-      { name: "Sh", image: "assets/illustrations/letters/sh.jpg" },
-      { name: "T", image: "assets/illustrations/letters/t.jpg" },
-      { name: "U", image: "assets/illustrations/letters/u.jpg" },
-      { name: "V", image: "assets/illustrations/letters/v.jpg" },
-      { name: "X", image: "assets/illustrations/letters/x.jpg" },
-      { name: "Y", image: "assets/illustrations/letters/y.jpg" },
-      { name: "Z", image: "assets/illustrations/letters/z.jpg" }
-    ]
+      ["A", "a.jpg"],
+      ["B", "b.jpg"],
+      ["Ch", "ch.jpg"],
+      ["D", "d.jpg"],
+      ["E", "e.jpg"],
+      ["F", "f.jpg"],
+      ["G", "g.jpg"],
+      ["G‘", "g‘.jpg"],
+      ["H", "h.jpg"],
+      ["I", "i1.jpg"],
+      ["J", "j.jpg"],
+      ["K", "k.jpg"],
+      ["L", "l.jpg"],
+      ["M", "m.jpg"],
+      ["N", "n.jpg"],
+      ["Ng", "ng.jpg"],
+      ["O", "o.jpg"],
+      ["O‘", "o‘.jpg"],
+      ["P", "p.jpg"],
+      ["Q", "q.jpg"],
+      ["R", "r.jpg"],
+      ["S", "s.jpg"],
+      ["Sh", "sh.jpg"],
+      ["T", "t.jpg"],
+      ["U", "u.jpg"],
+      ["V", "v.jpg"],
+      ["X", "x.jpg"],
+      ["Y", "y.jpg"],
+      ["Z", "z.jpg"]
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/letters/" + item[1]
+    }))
   },
+
+
+  // ---------------- SONLAR ----------------
 
   {
     id: "numbers",
-    title: "🔢 Sonlar",
+    title: "Sonlar",
+    emoji: "🔢",
     icon: "assets/icons/sonlar.png",
-
     items: [
-      { name: "1", image: "assets/illustrations/numbers/1.jpg" },
-      { name: "2", image: "assets/illustrations/numbers/2.jpg" },
-      { name: "3", image: "assets/illustrations/numbers/3.jpg" },
-      { name: "4", image: "assets/illustrations/numbers/4.jpg" },
-      { name: "5", image: "assets/illustrations/numbers/5.jpg" },
-      { name: "6", image: "assets/illustrations/numbers/6.jpg" },
-      { name: "7", image: "assets/illustrations/numbers/7.jpg" },
-      { name: "8", image: "assets/illustrations/numbers/8.jpg" },
-      { name: "9", image: "assets/illustrations/numbers/9.jpg" },
-      { name: "10", image: "assets/illustrations/numbers/10.jpg" }
-    ]
+      "1", "2", "3", "4", "5",
+      "6", "7", "8", "9", "10"
+    ].map(number => ({
+      name: number,
+      image: `assets/illustrations/numbers/${number}.jpg`
+    }))
   },
+
+
+  // ---------------- RANGLAR ----------------
 
   {
     id: "colors",
-    title: "🎨 Ranglar",
+    title: "Ranglar",
+    emoji: "🌈",
     icon: "assets/icons/ranglar.png",
-
     items: [
-      { name: "Bej rang", image: "assets/illustrations/colors/Bejrang.jpg" },
-      { name: "Kulrang", image: "assets/illustrations/colors/Kulrang.jpg" },
-      { name: "Binafsha", image: "assets/illustrations/colors/binafsha.jpg" },
-      { name: "Havorang", image: "assets/illustrations/colors/havorang.jpg" },
-      { name: "Jigarrang", image: "assets/illustrations/colors/jigarrang.jpg" },
-      { name: "Korall rang", image: "assets/illustrations/colors/korallrang.jpg" },
-      { name: "Ko‘k", image: "assets/illustrations/colors/ko'k.jpg" },
-      { name: "Oq", image: "assets/illustrations/colors/oq.jpg" },
-      { name: "Pushti", image: "assets/illustrations/colors/pushti.jpg" },
-      { name: "Qizil", image: "assets/illustrations/colors/qizil.jpg" },
-      { name: "Qora", image: "assets/illustrations/colors/qora.jpg" },
-      { name: "Sariq", image: "assets/illustrations/colors/sariq.jpg" },
-      { name: "Yashil", image: "assets/illustrations/colors/yashil.jpg" }
-    ]
+
+      ["Bejrang", "Bejrang .jpg"],
+      ["Kulrang", "Kulrang.jpg"],
+      ["Binafsha", "binafsha.jpg"],
+      ["Havorang", "havorang.jpg"],
+      ["Jigarrang", "jigarrang.jpg"],
+      ["Korall rang", "koralrang.jpg"],
+      ["Ko‘k", "ko‘k.jpg"],
+      ["Kumushrang", "kumushrang.jpg"],
+      ["Oltinrang", "oltinrang.jpg"],
+      ["Oq", "oq.jpg"],
+      ["Osmonrang", "osmonrang.jpg"],
+      ["Pushti", "pushti.jpg"],
+      ["Qizil", "qizil.jpg"],
+      ["Qora", "qora.jpg"],
+      ["Sariq", "sariq.jpg"],
+      ["To‘q sariq", "to‘q sarie.jpg"],
+      ["To‘q ko‘k", "to‘qkok.jpg"],
+      ["Turkuazrang", "turkuazrang.jpg"],
+      ["Yashil", "yashil.jpg"],
+      ["Zangori", "zangori.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/colors/" + item[1]
+    }))
   },
+
+
+  // ---------------- SHAKLLAR ----------------
 
   {
     id: "shapes",
-    title: "🔺 Shakllar",
+    title: "Shakllar",
+    emoji: "🔺",
     icon: "assets/icons/shakllar.png",
-
     items: [
-      { name: "Doira", image: "assets/illustrations/shapes/Doira.jpg" },
-      { name: "Kvadrat", image: "assets/illustrations/shapes/Kvadrat.jpg" },
-      { name: "Oval", image: "assets/illustrations/shapes/Oval.jpg" },
-      { name: "To‘rtburchak", image: "assets/illustrations/shapes/To'rtburchak.jpg" },
-      { name: "Uchburchak", image: "assets/illustrations/shapes/Uchburchak.jpg" },
-      { name: "Yulduz", image: "assets/illustrations/shapes/Yulduz.jpg" }
-    ]
+
+      ["Doira", "Doira.jpg"],
+      ["Kvadrat", "Kvadrat.jpg"],
+      ["Oval", "Oval.jpg"],
+      ["To‘rtburchak", "To'rtburchak.jpg"],
+      ["Uchburchak", "Uchburchak.jpg"],
+      ["Yulduz", "Yulduz.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/shapes/" + item[1]
+    }))
   },
+
+
+  // ---------------- TANA A'ZOLARI ----------------
 
   {
     id: "body",
-    title: "👂 Tana a’zolari",
+    title: "Tana a’zolari",
+    emoji: "🖐️",
     icon: "assets/icons/tana azolar.png",
-
     items: [
-      { name: "Bosh", image: "assets/illustrations/body/Bosh.jpg" },
-      { name: "Burun", image: "assets/illustrations/body/Burun.jpg" },
-      { name: "Ko‘z", image: "assets/illustrations/body/Ko'z.jpg" },
-      { name: "Og‘iz", image: "assets/illustrations/body/Og'iz.jpg" },
-      { name: "Oyoq", image: "assets/illustrations/body/Oyoq.jpg" },
-      { name: "Qo‘l", image: "assets/illustrations/body/Qo'l.jpg" },
-      { name: "Quloq", image: "assets/illustrations/body/Quloq.jpg" }
-    ]
+
+      ["Bosh", "Bosh.jpg"],
+      ["Burun", "Burun.jpg"],
+      ["Ko‘z", "Ko'z.jpg"],
+      ["Og‘iz", "Og'iz.jpg"],
+      ["Oyoq", "Oyoq.jpg"],
+      ["Qo‘l", "Qo'l.jpg"],
+      ["Quloq", "Quloq.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/body/" + item[1]
+    }))
   },
+
+
+  // ---------------- MEVALAR ----------------
 
   {
     id: "fruits",
-    title: "🍎 Mevalar",
-    icon: "assets/icons/mevalar.png",
-
+    title: "Mevalar",
+    emoji: "🍎",
+    icon: "assets/icons/mevalar .png",
     items: [
-      { name: "Olma", image: "assets/illustrations/fruits/olma.jpg" },
-      { name: "Nok", image: "assets/illustrations/fruits/nok.jpg" },
-      { name: "Anor", image: "assets/illustrations/fruits/anor.jpg" },
-      { name: "Apelsin", image: "assets/illustrations/fruits/apelsin.jpg" },
-      { name: "Limon", image: "assets/illustrations/fruits/limon.jpg" },
-      { name: "Uzum", image: "assets/illustrations/fruits/uzum.jpg" },
-      { name: "Banan", image: "assets/illustrations/fruits/banan.jpg" },
-      { name: "Tarvuz", image: "assets/illustrations/fruits/tarvuz.jpg" },
-      { name: "Qovun", image: "assets/illustrations/fruits/qovun.jpg" },
-      { name: "Qulupnay", image: "assets/illustrations/fruits/qulupnay.jpg" },
-      { name: "Olcha", image: "assets/illustrations/fruits/olcha.jpg" },
-      { name: "Ananas", image: "assets/illustrations/fruits/ananas.jpg" }
-    ]
+
+      ["Ananas", "ananas.jpg"],
+      ["Anor", "anor.jpg"],
+      ["Apelsin", "apelsin.jpg"],
+      ["Banan", "banan.jpg"],
+      ["Behi", "behi.jpg"],
+      ["Kivi", "kivi.jpg"],
+      ["Limon", "limon.jpg"],
+      ["Nok", "nok.jpg"],
+      ["Olcha", "olcha.jpg"],
+      ["Olma", "olma.jpg"],
+      ["Olxo‘ri", "olxo‘ri.jpg"],
+      ["Qovun", "qovun.jpg"],
+      ["Qulupnay", "qulupnay.jpg"],
+      ["Tarvuz", "tarvuz.jpg"],
+      ["Uzum", "uzum.jpg"],
+      ["Xurmo", "xurmo.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/fruits/" + item[1]
+    }))
   },
+
+
+  // ---------------- TABIAT ----------------
 
   {
     id: "nature",
-    title: "🌿 Tabiat",
+    title: "Tabiat",
+    emoji: "🌳",
     icon: "assets/icons/tabiat.png",
-
     items: [
-      { name: "O‘rmon", image: "assets/illustrations/nature/Ormon.jpg" },
-      { name: "Bulut", image: "assets/illustrations/nature/bulut.jpg" },
-      { name: "Daraxt", image: "assets/illustrations/nature/daraxt.jpg" },
-      { name: "Daryo", image: "assets/illustrations/nature/daryo.jpg" },
-      { name: "Dengiz", image: "assets/illustrations/nature/dengiz.jpg" },
-      { name: "Gul", image: "assets/illustrations/nature/gul.jpg" },
-      { name: "Kamalak", image: "assets/illustrations/nature/kamalak.jpg" },
-      { name: "Quyosh", image: "assets/illustrations/nature/quyosh.jpg" },
-      { name: "Qor", image: "assets/illustrations/nature/qor.jpg" },
-      { name: "Shamol", image: "assets/illustrations/nature/shamol.jpg" }
-    ]
+
+      ["O‘rmon", "Ormon.jpg"],
+      ["Oy va yulduzlar", "Oyva yulduzlar.jpg"],
+      ["Bulut", "bulut.jpg"],
+      ["Daraxt", "daraxt.jpg"],
+      ["Daryo", "daryo.jpg"],
+      ["Dengiz", "dengiz.jpg"],
+      ["Gul", "gul.jpg"],
+      ["Kamalak", "kamalak.jpg"],
+      ["Olov", "olov.jpg"],
+      ["O‘tloq", "o‘tloq.jpg"],
+      ["Qor", "qor.jpg"],
+      ["Quyosh", "quyosh.jpg"],
+      ["Shamol", "shamol.jpg"],
+      ["Tog‘", "tog‘.jpg"],
+      ["Yomg‘ir", "yomgir.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/nature/" + item[1]
+    }))
   },
+
+
+  // ---------------- TRANSPORT ----------------
 
   {
     id: "transport",
-    title: "🚗 Transport",
+    title: "Transport",
+    emoji: "🚗",
     icon: "assets/icons/transport.png",
-
     items: [
-      { name: "Avtobus", image: "assets/illustrations/transport/avtobus.jpg" },
-      { name: "Avtomobil", image: "assets/illustrations/transport/avtomobil.jpg" },
-      { name: "Kema", image: "assets/illustrations/transport/kema.jpg" },
-      { name: "Mototsikl", image: "assets/illustrations/transport/mototsikl.jpg" },
-      { name: "Poyezd", image: "assets/illustrations/transport/poyezd.jpg" },
-      { name: "Samolyot", image: "assets/illustrations/transport/samalyot.jpg" },
-      { name: "Traktor", image: "assets/illustrations/transport/traktor.jpg" },
-      { name: "Velosiped", image: "assets/illustrations/transport/velosiped.jpg" },
-      { name: "Vertolyot", image: "assets/illustrations/transport/vertalyot.jpg" }
-    ]
+
+      ["Avtobus", "avtobus.jpg"],
+      ["Avtomobil", "avtomobil.jpg"],
+      ["Havo shari", "havoshari.jpg"],
+      ["Kema", "kema.jpg"],
+      ["Mototsikl", "mototsikl.jpg"],
+      ["Politsiya mashinasi", "politsiyamashinasi.jpg"],
+      ["Poyezd", "poyezd.jpg"],
+      ["Samolyot", "samalyot.jpg"],
+      ["Samosval", "samasval.jpg"],
+      ["Tezyordam", "tezyordam.jpg"],
+      ["Traktor", "traktor.jpg"],
+      ["Velosiped", "velosiped.jpg"],
+      ["Vertalyot", "vertalyot.jpg"],
+      ["Yaxta", "yaxta.jpg"],
+      ["Yong‘in mashinasi", "yonginmashinasi.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/transport/" + item[1]
+    }))
   },
+
+
+  // ---------------- VAQT ----------------
 
   {
     id: "time",
-    title: "⏰ Vaqt",
+    title: "Vaqt",
+    emoji: "⏰",
     icon: "assets/icons/vaqt.png",
-
     items: [
-      { name: "Chizma soat", image: "assets/illustrations/time/chizma soat.jpg" },
-      { name: "Kalendar", image: "assets/illustrations/time/kalendar.jpg" },
-      { name: "Kun va tun", image: "assets/illustrations/time/kun va tun.jpg" },
-      { name: "Qum soat", image: "assets/illustrations/time/qum soat.jpg" },
-      { name: "Sana", image: "assets/illustrations/time/sana.jpg" },
-      { name: "Sekundomer", image: "assets/illustrations/time/sekundomer.jpg" },
-      { name: "Soat", image: "assets/illustrations/time/soat.jpg" }
-    ]
+
+      ["Chizma soat", "chizma soat.jpg"],
+      ["Kalendar", "kalendar.jpg"],
+      ["Kun va tun", "kun va tun.jpg"],
+      ["Qum soat", "qum soat.jpg"],
+      ["Sana", "sana.jpg"],
+      ["Sekundomer", "sekundomer.jpg"],
+      ["Soat", "soat.jpg"],
+      ["Soat 1", "soat1.jpg"]
+
+    ].map(item => ({
+      name: item[0],
+      image: "assets/illustrations/time/" + item[1]
+    }))
   }
+
 ];
 
 
-// =========================
+// ========================================
+// HOLAT
+// ========================================
+
+let currentPage = "home";
+let currentCategory = null;
+let currentIndex = 0;
+
+let soundEnabled = true;
+let quizScore = 0;
+let quizIndex = 0;
+
+
+// ========================================
+// RASM YO'LI
+// ========================================
+
+function imagePath(path) {
+  return encodeURI(path);
+}
+
+
+// ========================================
+// TOAST XABARI
+// ========================================
+
+function showToast(message) {
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
+
+}
+
+
+// ========================================
+// OVOZ
+// ========================================
+
+function speak(text) {
+
+  if (!soundEnabled) return;
+
+  if ("speechSynthesis" in window) {
+
+    window.speechSynthesis.cancel();
+
+    const speech =
+      new SpeechSynthesisUtterance(text);
+
+    speech.lang = "uz-UZ";
+    speech.rate = 0.8;
+    speech.pitch = 1;
+
+    window.speechSynthesis.speak(speech);
+  }
+
+}
+
+
+// ========================================
+// YUQORI TUGMALAR
+// ========================================
+
+backBtn.addEventListener("click", () => {
+
+  if (currentPage === "lesson") {
+    showLessons();
+  } else {
+    showHome();
+  }
+
+});
+
+
+soundBtn.addEventListener("click", () => {
+
+  soundEnabled = !soundEnabled;
+
+  soundBtn.textContent =
+    soundEnabled ? "🔊" : "🔇";
+
+  showToast(
+    soundEnabled
+      ? "Ovoz yoqildi 🔊"
+      : "Ovoz o‘chirildi 🔇"
+  );
+
+});
+
+
+// ========================================
+// PASTKI MENYU
+// ========================================
+
+document.querySelectorAll(".nav-btn").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    const route = button.dataset.route;
+
+    if (route === "home") {
+      showHome();
+    }
+
+    if (route === "lessons") {
+      showLessons();
+    }
+
+    if (route === "quiz") {
+      startQuiz();
+    }
+
+    if (route === "ranking") {
+      showRanking();
+    }
+
+  });
+
+});
+
+
+function setActiveNav(route) {
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.route === route
+      );
+
+    });
+
+}
+
+
+// ========================================
 // BOSH SAHIFA
-// =========================
+// ========================================
 
 function showHome() {
 
+  currentPage = "home";
+
+  currentCategory = null;
+
+  backBtn.classList.add("hidden");
+
+  setActiveNav("home");
+
+
   app.innerHTML = `
-    <div class="header">
 
-      <div class="logo-area">
-
-        <img
-          src="assets/icons/logo.png"
-          alt="Logo"
-        >
-
-        <div class="logo-text">
-          <h1>Bolajonlar</h1>
-          <p>O‘ynab o‘rganamiz!</p>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="home-container">
+    <section class="home-container">
 
       <div class="welcome-box wool-card">
 
-        <h2>O‘ynab o‘rganamiz! 🧶</h2>
+        <img
+          class="home-logo"
+          src="${imagePath("assets/icons/logo.png")}"
+          alt="Bolajonlar"
+        >
+
+        <h2>Bolajonlar! 🧶</h2>
 
         <p>
-          Qiziqarli rasmlar bilan
-          yangi bilimlarni o‘rganing!
+          O‘ynab, ko‘rib va tinglab
+          yangi bilimlarni o‘rganamiz!
+        </p>
+
+        <button
+          class="button primary-button"
+          data-action="lessons"
+        >
+          Boshlaymiz! 🚀
+        </button>
+
+      </div>
+
+
+      <h2 class="section-title">
+        📚 Bo‘limlarni tanlang
+      </h2>
+
+
+      <div class="categories">
+
+        ${categories.map(category => `
+
+          <button
+            class="category"
+            data-category="${category.id}"
+          >
+
+            <img
+              src="${imagePath(category.icon)}"
+              alt="${category.title}"
+            >
+
+            <h3>
+              ${category.emoji}
+              ${category.title}
+            </h3>
+
+          </button>
+
+        `).join("")}
+
+      </div>
+
+
+      <div class="home-actions">
+
+        <button
+          class="button primary-button"
+          data-action="quiz"
+        >
+          🧠 Quiz o‘ynash
+        </button>
+
+
+        <button
+          class="button secondary-button"
+          data-action="ranking"
+        >
+          🏆 Reyting
+        </button>
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  addPageEvents();
+
+}
+
+
+// ========================================
+// DARS BO'LIMLARI
+// ========================================
+
+function showLessons() {
+
+  currentPage = "lessons";
+
+  backBtn.classList.add("hidden");
+
+  setActiveNav("lessons");
+
+
+  app.innerHTML = `
+
+    <section class="home-container">
+
+      <div class="page-title">
+
+        <h2>
+          📚 Darslar
+        </h2>
+
+        <p>
+          O‘zingizga yoqqan bo‘limni tanlang
         </p>
 
       </div>
@@ -241,15 +563,18 @@ function showHome() {
 
           <button
             class="category"
-            onclick="openCategory('${category.id}')"
+            data-category="${category.id}"
           >
 
             <img
-              src="${category.icon}"
+              src="${imagePath(category.icon)}"
               alt="${category.title}"
             >
 
-            <h3>${category.title}</h3>
+            <h3>
+              ${category.emoji}
+              ${category.title}
+            </h3>
 
           </button>
 
@@ -257,39 +582,19 @@ function showHome() {
 
       </div>
 
+    </section>
 
-      <br>
-
-
-      <button
-        class="button primary-button"
-        style="width:100%; margin-bottom:10px"
-        onclick="startQuiz()"
-      >
-        🧠 Quiz o‘ynash
-      </button>
-
-
-      <button
-        class="button secondary-button"
-        style="width:100%"
-        onclick="showRanking()"
-      >
-        🏆 Reyting
-      </button>
-
-    </div>
   `;
+
+
+  addPageEvents();
+
 }
 
 
-// =========================
+// ========================================
 // BO'LIMNI OCHISH
-// =========================
-
-let currentCategory = null;
-let currentIndex = 0;
-
+// ========================================
 
 function openCategory(id) {
 
@@ -298,67 +603,92 @@ function openCategory(id) {
       category => category.id === id
     );
 
+  if (!currentCategory) return;
+
   currentIndex = 0;
 
   showLesson();
+
 }
 
 
-// =========================
-// DARSNI KO'RSATISH
-// =========================
+// ========================================
+// BITTA DARS
+// ========================================
 
 function showLesson() {
+
+  if (!currentCategory) {
+    showLessons();
+    return;
+  }
+
+
+  currentPage = "lesson";
+
+  backBtn.classList.remove("hidden");
+
+  setActiveNav("lessons");
+
 
   const item =
     currentCategory.items[currentIndex];
 
 
+  const progress =
+    Math.round(
+      ((currentIndex + 1) /
+      currentCategory.items.length) * 100
+    );
+
+
   app.innerHTML = `
 
-    <div class="header">
+    <section class="lesson-container">
 
-      <button
-        class="button secondary-button"
-        onclick="showHome()"
-      >
-        ←
-      </button>
+      <div class="lesson-top">
 
-
-      <div class="logo-text">
-
-        <h1>
+        <span class="lesson-category">
+          ${currentCategory.emoji}
           ${currentCategory.title}
-        </h1>
+        </span>
+
+        <span>
+          ${currentIndex + 1}
+          /
+          ${currentCategory.items.length}
+        </span>
 
       </div>
 
 
-      <div></div>
+      <div class="progress-bar">
 
-    </div>
+        <div
+          class="progress-fill"
+          style="width:${progress}%"
+        ></div>
+
+      </div>
 
 
-    <div class="lesson-container">
-
-      <div class="lesson-card">
+      <div class="lesson-card wool-card">
 
         <img
           class="lesson-image"
-          src="${item.image}"
+          src="${imagePath(item.image)}"
           alt="${item.name}"
         >
 
 
-        <h2 class="lesson-title">
+        <h1 class="lesson-title">
           ${item.name}
-        </h2>
+        </h1>
 
 
         <button
           class="button primary-button"
-          onclick="speak('${item.name}')"
+          data-speak="${item.name}"
         >
           🔊 Tinglash
         </button>
@@ -368,7 +698,8 @@ function showLesson() {
 
           <button
             class="button secondary-button"
-            onclick="previousLesson()"
+            data-action="previous"
+            ${currentIndex === 0 ? "disabled" : ""}
           >
             ← Oldingi
           </button>
@@ -376,23 +707,43 @@ function showLesson() {
 
           <button
             class="button primary-button"
-            onclick="nextLesson()"
+            data-action="next"
+            ${currentIndex ===
+              currentCategory.items.length - 1
+              ? "disabled"
+              : ""
+            }
           >
             Keyingi →
           </button>
 
         </div>
 
+
+        <button
+          class="small-home-button"
+          data-action="lessons"
+        >
+          📚 Barcha darslar
+        </button>
+
       </div>
 
-    </div>
+    </section>
+
   `;
+
+
+  addPageEvents();
+
+  speak(item.name);
+
 }
 
 
-// =========================
-// OLDINGI
-// =========================
+// ========================================
+// OLDINGI DARS
+// ========================================
 
 function previousLesson() {
 
@@ -404,17 +755,16 @@ function previousLesson() {
 
   } else {
 
-    showToast(
-      "Bu birinchi rasm!"
-    );
+    showToast("Bu birinchi rasm 🙂");
 
   }
+
 }
 
 
-// =========================
-// KEYINGI
-// =========================
+// ========================================
+// KEYINGI DARS
+// ========================================
 
 function nextLesson() {
 
@@ -429,90 +779,38 @@ function nextLesson() {
 
   } else {
 
-    showToast(
-      "Bu oxirgi rasm!"
-    );
+    showToast("Bu oxirgi rasm 🎉");
 
   }
+
 }
 
 
-// =========================
-// OVOZ
-// =========================
-
-function speak(text) {
-
-  if ("speechSynthesis" in window) {
-
-    window.speechSynthesis.cancel();
-
-    const speech =
-      new SpeechSynthesisUtterance(text);
-
-    speech.lang = "uz-UZ";
-
-    speech.rate = 0.8;
-
-    window.speechSynthesis.speak(
-      speech
-    );
-
-  }
-}
-
-
-// =========================
-// XABAR
-// =========================
-
-function showToast(message) {
-
-  const toast =
-    document.getElementById("toast");
-
-  toast.innerText = message;
-
-  toast.style.display = "block";
-
-
-  setTimeout(() => {
-
-    toast.style.display = "none";
-
-  }, 2000);
-}
-
-
-// =========================
-// QUIZ
-// =========================
-
-let quizScore = 0;
-let quizQuestion = 0;
-
+// ========================================
+// QUIZ SAVOLLARI
+// ========================================
 
 const questions = [
 
   {
-    question: "1 + 1 nechchi?",
+    question: "1 + 1 nechchi bo‘ladi?",
     answers: ["1", "2", "3", "4"],
     correct: 1
   },
 
   {
-    question: "Olma nima?",
+    question: "Olma qaysi bo‘limga kiradi?",
     answers: [
-      "Meva",
+      "Mevalar",
       "Transport",
-      "Rang",
+      "Ranglar",
       "Vaqt"
     ],
     correct: 0
   },
 
   {
-    question: "Qizil nima?",
+    question: "Qizil bu nima?",
     answers: [
       "Hayvon",
       "Rang",
@@ -527,8 +825,8 @@ const questions = [
     answers: [
       "Mevalar",
       "Transport",
-      "Ranglar",
-      "Shakllar"
+      "Shakllar",
+      "Ranglar"
     ],
     correct: 1
   },
@@ -538,95 +836,174 @@ const questions = [
     answers: [
       "Shakl",
       "Meva",
-      "Hayvon",
-      "Transport"
+      "Transport",
+      "Rang"
     ],
     correct: 0
+  },
+
+  {
+    question: "Kamalak qaysi bo‘limga kiradi?",
+    answers: [
+      "Vaqt",
+      "Tabiat",
+      "Harflar",
+      "Sonlar"
+    ],
+    correct: 1
+  },
+
+  {
+    question: "5 dan keyin qaysi son keladi?",
+    answers: [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    correct: 2
   }
 
 ];
 
 
+// ========================================
+// QUIZNI BOSHLASH
+// ========================================
+
 function startQuiz() {
+
+  currentPage = "quiz";
 
   quizScore = 0;
 
-  quizQuestion = 0;
+  quizIndex = 0;
+
+  backBtn.classList.remove("hidden");
+
+  setActiveNav("quiz");
 
   showQuestion();
+
 }
 
 
+// ========================================
+// SAVOLNI KO'RSATISH
+// ========================================
+
 function showQuestion() {
 
-  if (
-    quizQuestion >= questions.length
-  ) {
+  if (quizIndex >= questions.length) {
 
     showQuizResult();
 
     return;
+
   }
 
 
   const question =
-    questions[quizQuestion];
+    questions[quizIndex];
 
 
   app.innerHTML = `
 
-    <div class="quiz-container">
+    <section class="quiz-container">
 
-      <div class="quiz-card">
+      <div class="quiz-card wool-card">
 
-        <h2>
-          🧠 Quiz
+        <div class="quiz-progress">
+
+          <span>
+            🧠 Savol
+            ${quizIndex + 1}
+            /
+            ${questions.length}
+          </span>
+
+          <span>
+            ⭐ ${quizScore}
+          </span>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+          <div
+            class="progress-fill"
+            style="
+              width:
+              ${((quizIndex + 1) /
+              questions.length) * 100}%
+            "
+          ></div>
+
+        </div>
+
+
+        <h2 class="quiz-question">
+
+          ${question.question}
+
         </h2>
 
 
-        <p>
-          Savol
-          ${quizQuestion + 1}
-          /
-          ${questions.length}
-        </p>
+        <div class="answers">
 
+          ${question.answers.map(
+            (answer, index) => `
 
-        <br>
+              <button
+                class="answer"
+                data-answer="${index}"
+              >
 
+                ${answer}
 
-        <h3>
-          ${question.question}
-        </h3>
+              </button>
 
+            `
+          ).join("")}
 
-        ${question.answers.map(
-          (answer, index) => `
-
-          <button
-            class="answer"
-            onclick="checkAnswer(${index})"
-          >
-
-            ${answer}
-
-          </button>
-
-        `
-        ).join("")}
-
+        </div>
 
       </div>
 
-    </div>
+    </section>
+
   `;
+
+
+  document
+    .querySelectorAll("[data-answer]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          checkAnswer(
+            Number(button.dataset.answer)
+          );
+
+        }
+      );
+
+    });
+
 }
 
+
+// ========================================
+// JAVOBNI TEKSHIRISH
+// ========================================
 
 function checkAnswer(answerIndex) {
 
   const question =
-    questions[quizQuestion];
+    questions[quizIndex];
 
 
   if (
@@ -635,47 +1012,79 @@ function checkAnswer(answerIndex) {
 
     quizScore++;
 
-    showToast(
-      "To‘g‘ri! 🎉"
-    );
+    showToast("To‘g‘ri! 🎉");
 
   } else {
 
-    showToast(
-      "Yana urinib ko‘ring!"
-    );
+    showToast("Keyingi safar albatta! 💪");
 
   }
 
 
+  document
+    .querySelectorAll(".answer")
+    .forEach(button => {
+
+      button.disabled = true;
+
+    });
+
+
   setTimeout(() => {
 
-    quizQuestion++;
+    quizIndex++;
 
     showQuestion();
 
-  }, 700);
+  }, 900);
+
 }
 
 
-// =========================
+// ========================================
 // QUIZ NATIJASI
-// =========================
+// ========================================
 
 function showQuizResult() {
 
+  const percent =
+    Math.round(
+      (quizScore / questions.length) * 100
+    );
+
+
+  let message = "";
+
+  if (percent === 100) {
+
+    message = "Ajoyib! Siz haqiqiy bilimdonsiz! 🏆";
+
+  } else if (percent >= 70) {
+
+    message = "Juda yaxshi natija! 🌟";
+
+  } else if (percent >= 40) {
+
+    message = "Yaxshi! Yana mashq qiling! 💪";
+
+  } else {
+
+    message = "Yana bir bor urinib ko‘ring! 😊";
+
+  }
+
+
   app.innerHTML = `
 
-    <div class="quiz-container">
+    <section class="quiz-container">
 
       <div
-        class="quiz-card"
-        style="text-align:center"
+        class="quiz-card wool-card result-card"
       >
 
-        <h1>
+        <div class="result-trophy">
           🏆
-        </h1>
+        </div>
 
 
         <h2>
@@ -683,37 +1092,32 @@ function showQuizResult() {
         </h2>
 
 
-        <h1>
+        <h1 class="score">
+
           ${quizScore}
           /
           ${questions.length}
+
         </h1>
 
 
-        <br>
+        <p>
+          ${message}
+        </p>
 
 
         <input
           id="playerName"
+          class="name-input"
+          type="text"
+          maxlength="20"
           placeholder="Ismingizni yozing"
-          style="
-            width:100%;
-            padding:15px;
-            border-radius:15px;
-            border:2px solid #f0ddd5;
-            font-size:16px;
-          "
         >
 
 
-        <br>
-        <br>
-
-
         <button
+          id="saveScoreBtn"
           class="button primary-button"
-          style="width:100%"
-          onclick="saveScore()"
         >
 
           🏆 Reytingga qo‘shish
@@ -721,31 +1125,510 @@ function showQuizResult() {
         </button>
 
 
-        <br>
-        <br>
-
-
         <button
+          id="restartQuizBtn"
           class="button secondary-button"
-          onclick="showHome()"
         >
 
-          Bosh sahifa
+          🔄 Qayta o‘ynash
 
         </button>
 
       </div>
 
-    </div>
+    </section>
+
   `;
+
+
+  document
+    .getElementById("saveScoreBtn")
+    .addEventListener(
+      "click",
+      saveScore
+    );
+
+
+  document
+    .getElementById("restartQuizBtn")
+    .addEventListener(
+      "click",
+      startQuiz
+    );
+
 }
 
 
-// =========================
-// REYTINGNI SAQLASH
-// =========================
+// ========================================
+// NATIJANI SAQLASH
+// ========================================
 
 function saveScore() {
 
-  const nameInput =
-   
+  const input =
+    document.getElementById("playerName");
+
+
+  const name =
+    input.value.trim();
+
+
+  if (!name) {
+
+    showToast("Avval ismingizni yozing ✍️");
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  const ranking =
+    JSON.parse(
+      localStorage.getItem(
+        "bolajonlarRanking"
+      ) || "[]"
+    );
+
+
+  ranking.push({
+
+    name: name,
+
+    score: quizScore,
+
+    total: questions.length,
+
+    date: new Date().toLocaleDateString()
+
+  });
+
+
+  ranking.sort(
+    (a, b) => b.score - a.score
+  );
+
+
+  const bestRanking =
+    ranking.slice(0, 50);
+
+
+  localStorage.setItem(
+    "bolajonlarRanking",
+    JSON.stringify(bestRanking)
+  );
+
+
+  showToast("Natijangiz saqlandi! 🎉");
+
+
+  setTimeout(() => {
+
+    showRanking();
+
+  }, 500);
+
+}
+
+
+// ========================================
+// REYTING
+// ========================================
+
+function showRanking() {
+
+  currentPage = "ranking";
+
+  backBtn.classList.remove("hidden");
+
+  setActiveNav("ranking");
+
+
+  const ranking =
+    JSON.parse(
+      localStorage.getItem(
+        "bolajonlarRanking"
+      ) || "[]"
+    );
+
+
+  app.innerHTML = `
+
+    <section class="ranking-container">
+
+      <div class="ranking-card wool-card">
+
+        <div class="ranking-header">
+
+          <img
+            src="${imagePath(
+              "assets/icons/reyting.png"
+            )}"
+            alt="Reyting"
+          >
+
+          <div>
+
+            <h2>
+              🏆 Reyting
+            </h2>
+
+            <p>
+              Eng yaxshi bilimdonlar
+            </p>
+
+          </div>
+
+        </div>
+
+
+        ${ranking.length === 0
+          ? `
+
+            <div class="empty-ranking">
+
+              <div>🏆</div>
+
+              <h3>
+                Hali natijalar yo‘q
+              </h3>
+
+              <p>
+                Quiz o‘ynab birinchi
+                o‘rinni egallang!
+              </p>
+
+              <button
+                class="button primary-button"
+                data-action="quiz"
+              >
+                Quiz boshlash 🧠
+              </button>
+
+            </div>
+
+          `
+
+          :
+
+          `
+
+            <div class="ranking-list">
+
+              ${ranking.map(
+                (player, index) => `
+
+                  <div class="ranking-item">
+
+                    <div class="rank-number">
+
+                      ${
+                        index === 0
+                          ? "🥇"
+                          : index === 1
+                          ? "🥈"
+                          : index === 2
+                          ? "🥉"
+                          : index + 1
+                      }
+
+                    </div>
+
+
+                    <div class="player-info">
+
+                      <strong>
+                        ${escapeHtml(player.name)}
+                      </strong>
+
+                      <small>
+                        ${player.date}
+                      </small>
+
+                    </div>
+
+
+                    <div class="player-score">
+
+                      ${player.score}
+                      /
+                      ${player.total}
+
+                      ⭐
+
+                    </div>
+
+                  </div>
+
+                `
+              ).join("")}
+
+            </div>
+
+
+            <button
+              id="clearRankingBtn"
+              class="button secondary-button"
+            >
+
+              🗑 Reytingni tozalash
+
+            </button>
+
+          `
+
+        }
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  addPageEvents();
+
+
+  const clearButton =
+    document.getElementById(
+      "clearRankingBtn"
+    );
+
+
+  if (clearButton) {
+
+    clearButton.addEventListener(
+      "click",
+      () => {
+
+        if (
+          confirm(
+            "Reytingni tozalashni xohlaysizmi?"
+          )
+        ) {
+
+          localStorage.removeItem(
+            "bolajonlarRanking"
+          );
+
+          showRanking();
+
+          showToast(
+            "Reyting tozalandi"
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
+
+// ========================================
+// XAVFSIZ MATN
+// ========================================
+
+function escapeHtml(text) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+
+}
+
+
+// ========================================
+// SAHIFA TUGMALARI
+// ========================================
+
+function addPageEvents() {
+
+  document
+    .querySelectorAll("[data-category]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          openCategory(
+            button.dataset.category
+          );
+
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-speak]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          speak(
+            button.dataset.speak
+          );
+
+        }
+      );
+
+    });
+
+
+  document
+    .querySelectorAll("[data-action]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const action =
+            button.dataset.action;
+
+
+          if (action === "home") {
+            showHome();
+          }
+
+
+          if (action === "lessons") {
+            showLessons();
+          }
+
+
+          if (action === "quiz") {
+            startQuiz();
+          }
+
+
+          if (action === "ranking") {
+            showRanking();
+          }
+
+
+          if (action === "previous") {
+            previousLesson();
+          }
+
+
+          if (action === "next") {
+            nextLesson();
+          }
+
+        }
+      );
+
+    });
+
+}
+
+
+// ========================================
+// TELEFONGA O'RNATISH
+// ========================================
+
+let deferredPrompt = null;
+
+
+window.addEventListener(
+  "beforeinstallprompt",
+  event => {
+
+    event.preventDefault();
+
+    deferredPrompt = event;
+
+    if (installBar) {
+
+      installBar.hidden = false;
+
+    }
+
+  }
+);
+
+
+if (installBtn) {
+
+  installBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!deferredPrompt) {
+
+        showToast(
+          "Brauzer menyusidan ilovani o‘rnating 📱"
+        );
+
+        return;
+
+      }
+
+
+      deferredPrompt.prompt();
+
+
+      await deferredPrompt.userChoice;
+
+
+      deferredPrompt = null;
+
+
+      if (installBar) {
+
+        installBar.hidden = true;
+
+      }
+
+    }
+  );
+
+}
+
+
+// ========================================
+// SERVICE WORKER
+// ========================================
+
+if (
+  "serviceWorker" in navigator
+) {
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .catch(error => {
+
+          console.log(
+            "Service Worker xatosi:",
+            error
+          );
+
+        });
+
+    }
+  );
+
+}
+
+
+// ========================================
+// ILOVANI BOSHLASH
+// ========================================
+
+showHome();
