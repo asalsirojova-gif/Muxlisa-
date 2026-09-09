@@ -10,10 +10,10 @@ const categories = [
    items: [
      ['A', 'a.jpg', 'Anor'], ['B', 'b.jpg', 'Bola'], ['Ch', 'ch.jpg', 'Choy'],
      ['D', 'd.jpg', 'Daraxt'], ['E', 'e.jpg', 'Eshik'], ['F', 'f.jpg', 'Fil'],
-     ['G', 'g.jpg', 'Gul'], ['G‘', "g'.jpg", 'G‘oz'], ['H', 'h.jpg', 'Havo'],
+     ['G', 'g.jpg', 'Gul'], ['G‘', "g‘.jpg", 'G‘oz'], ['H', 'h.jpg', 'Havo'],
      ['I', 'i1.jpg', 'Ilon'], ['J', 'j.jpg', 'Jo‘ja'], ['K', 'k.jpg', 'Kitob'],
      ['L', 'l.jpg', 'Lola'], ['M', 'm.jpg', 'Meva'], ['N', 'n.jpg', 'Non'],
-     ['Ng', 'ng.jpg', 'Tong'], ['O', 'o.jpg', 'Olma'], ['O‘', "o'.jpg", 'O‘rik'],
+     ['Ng', 'ng.jpg', 'Tong'], ['O', 'o.jpg', 'Olma'], ['O‘', "o‘.jpg", 'O‘rik'],
      ['P', 'p.jpg', 'Paxta'], ['Q', 'q.jpg', 'Quyon'], ['R', 'r.jpg', 'Rang'],
      ['S', 's.jpg', 'Suv'], ['Sh', 'sh.jpg', 'Shamol'], ['T', 't.jpg', 'Tog‘'],
      ['U', 'u.jpg', 'Uzum'], ['V', 'v.jpg', 'Vatan'], ['X', 'x.jpg', 'Xurmo'],
@@ -35,7 +35,7 @@ const categories = [
    cls: 'yellow',
    folder: 'colors',
    items: [
-     ['Bejrang', 'bejrang.jpg'], ['Kulrang', 'Kulrang.jpg'], ['Binafsha', 'binafsha.jpg'],
+     ['Bejrang', 'Bejrang.jpg'], ['Kulrang', 'Kulrang.jpg'], ['Binafsha', 'binafsha.jpg'],
      ['Havorang', 'havorang.jpg'], ['Jigarrang', 'jigarrang.jpg'], ['Koral rang', 'korallrang.jpg'],
      ['Ko‘k', "ko'k.jpg"], ['Kumushrang', 'kumushrang.jpg'], ['Oltinrang', 'oltinrang.jpg'],
      ['Oq', 'oq.jpg'], ['Osmonrang', 'osmonrang.jpg'], ['Pushti', 'pushti.jpg'],
@@ -202,104 +202,4 @@ function clockGame() {
   const t = times[Math.floor(Math.random() * times.length)];
   const h = t[0];
   const m = t[1];
-  const degH = ((h % 12) + m / 60) * 30;
-  const degM = m * 6;
-  app.innerHTML = `<h1 class="section-title">Soat mashqi</h1><div class="detail"><p>Bu soat nechchi bo‘ldi?</p><div class="clock" style="--hour:${degH}deg;--minute:${degM}deg"><div class="clock-dot"></div></div><div class="answers">${[1, 3, 6, 9].map(x => `<button class="answer ${x === h ? 'correct-answer' : ''}" onclick="clockAnswer(this,${x === h})">${x}:00</button>`).join('')}</div></div>`;
-}
-
-function clockAnswer(el, ok) {
-  el.classList.add(ok ? 'correct' : 'wrong');
-  if (ok) speak('To‘g‘ri! Ajoyib!');
-  else speak('Yana urinib ko‘ring');
-}
-
-function quizPool() {
-  return categories.flatMap(c => c.items.map((it, i) => ({ c, it, i }))).filter(x => x.c.id !== 'time');
-}
-
-function shuffle(a) {
-  return [...a].sort(() => Math.random() - 0.5);
-}
-
-let quizState = null;
-
-function startQuiz() {
-  const pool = shuffle(quizPool());
-  quizState = { q: pool.slice(0, 10), i: 0, score: 0, locked: false };
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const s = quizState;
-  if (s.i >= s.q.length) return quizResult();
-  const q = s.q[s.i];
-  const same = q.c.items;
-  let wrong = shuffle(same.filter(x => x !== q.it)).slice(0, 3).map(x => x[0]);
-  let opts = shuffle([q.it[0], ...wrong]);
-  app.innerHTML = `<div class="quiz-top"><b>⭐ Ball: ${s.score}/${s.q.length}</b><span>${s.i + 1}/${s.q.length}</span></div><div class="question-card"><p>Rasmda nima tasvirlangan?</p>${safeImg(imgPath(q.c, q.it[1]), q.it[0])}<div class="answers">${opts.map(o => `<button class="answer" onclick="answerQuiz(this,'${esc(o)}')">${o}</button>`).join('')}</div></div>`;
-}
-
-function answerQuiz(btn, val) {
-  const s = quizState;
-  if (s.locked) return;
-  s.locked = true;
-  const q = s.q[s.i];
-  const ok = val === q.it[0];
-  btn.classList.add(ok ? 'correct' : 'wrong');
-  if (ok) {
-    s.score++;
-    speak('To‘g‘ri! Ajoyib!');
-  } else {
-    speak('Yana mashq qilamiz');
-    document.querySelectorAll('.answer').forEach(b => {
-      if (b.textContent === q.it[0]) b.classList.add('correct');
-    });
-  }
-  setTimeout(() => {
-    s.i++;
-    s.locked = false;
-    renderQuestion();
-  }, 850);
-}
-
-function quizResult() {
-  const s = quizState;
-  const msg = s.score === 10 ? 'Ajoyib!' : s.score >= 8 ? 'Juda yaxshi!' : 'Yana mashq qilamiz!';
-  app.innerHTML = `<div class="result"><div style="font-size:60px">🏆</div><h1>TABRIKLAYMIZ!</h1><div class="score">${s.score}/10</div><p>${msg}</p><div class="name-form"><input id="playerName" maxlength="24" placeholder="Ismingiz"><button class="primary" onclick="saveScore(${s.score})">Reytingga qo‘shish</button></div><p><button class="secondary" onclick="startQuiz()">Yana o‘ynash</button></p></div>`;
-}
-
-function getScores() {
-  try {
-    return JSON.parse(localStorage.getItem('bolajonlar_scores') || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function saveScore(score) {
-  const name = (document.getElementById('playerName').value.trim() || 'Mehmon').slice(0, 24);
-  const scores = [...getScores(), { name, score, date: Date.now() }].sort((a, b) => b.score - a.score || a.date - b.date).slice(0, 10);
-  localStorage.setItem('bolajonlar_scores', JSON.stringify(scores));
-  route('ranking');
-}
-
-function ranking() {
-  const s = getScores();
-  app.innerHTML = `<h1 class="section-title">🏆 Reyting</h1><p class="section-subtitle">Qurilmadagi eng yaxshi 10 natija</p><div class="ranking-list">${s.length ? s.map((x, i) => `<div class="rank-row"><span>${['🥇', '🥈', '🥉'][i] || '#' + (i + 1)} ${esc(x.name)}</span><b>${x.score}/10</b></div>`).join('') : `<div class="result"><h2>Hali natija yo‘q</h2><p>Quizni ishlab birinchi bo‘ling!</p><button class="primary" onclick="route('quiz')">Quizni boshlash</button></div>`}</div>`;
-}
-
-document.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', () => route(b.dataset.nav)));
-back.addEventListener('click', () => {
-  if (history.length > 1) {
-    history.pop();
-    route(history[history.length - 1], false);
-  }
-});
-document.getElementById('brandBtn').onclick = () => route('home');
-document.getElementById('soundToggle').onclick = function () {
-  voiceOn = !voiceOn;
-  this.textContent = voiceOn ? '🔊' : '🔇';
-};
-
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-route('home', false);
+  const degH = ((
